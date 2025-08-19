@@ -1,0 +1,6 @@
+title: UkensUU Blog
+description: >
+  Her kan du lese Ukens UU!
+baseurl: "/ukensuu" # Repository name (required for project pages)
+url: "https://danieltv2.github.io"
+theme: minima
