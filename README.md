@@ -1,4 +1,4 @@
 Her er ukens UU -tips.
 <html>
-<button></button>
+<button>test</button>
 </html>
