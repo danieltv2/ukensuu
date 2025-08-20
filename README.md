@@ -1,2 +1,6 @@
-# Ukens UU
-Her er ukens UU -tips.
+---
+layout: post
+title: "Ukens UU"
+date: 2025-08-20
+categories: [introduction, blog]
+---
