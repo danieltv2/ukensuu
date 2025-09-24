@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ukens UU</title>
+  <style>
+    /* CSS Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #0073e6;
+    }
+
+    p {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .dropdown {
+      font-size: 1em;
+      padding: 5px 8px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      padding: 10px;
+    }
+
+    .info-box {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .info-box:hover {
+      transform: translateY(-3px);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .info-box-header {
+      background-color: #0073e6;
+      color: white;
+      padding: 10px;
+      font-size: 1.1em;
+    }
+
+    .info-box-content {
+      padding: 15px;
+      display: none; /* Initially collapsed */
+    }
+
+    .info-box.expanded .info-box-content {
+      display: block;
+    }
+
+    .link {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .link a {
+      text-decoration: none;
+      color: #0073e6;
+      font-size: 1.2em;
+      border-bottom: 1px solid #0073e6;
+    }
+
+    .link a:hover {
+      color: #005bb5;
+      border-bottom: 1px solid #005bb5;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ukens UU</h1>
+  <p>Her kan du lese deg opp på universell utforming. Du kan lære om akkurat det du trenger på Elevkanalen, nyheter og grunnleggende prinsipper for tilgjengelighet. Temaene er delt inn i kategorier og du kan utforske dem slik du selv vil. Har du sett ukens tema? Da kan du ta ukens test!</p>
+
+  <div class="link">
+    <a href="test-page.html" target="_blank">Ta ukens test!</a>
+  </div>
+
+  <div class="controls">
+    <label for="sort-dropdown">Sorter: </label>
+    <select id="sort-dropdown" class="dropdown">
+      <option value="name">Navn</option>
+      <option value="category">Kategori</option>
+      <option value="date">Dato</option>
+    </select>
+  </div>
+
+  <div class="grid-container" id="grid-container">
+    <div class="info-box" data-name="Item A" data-category="Category 1" data-date="2023-01-01">
+      <div class="info-box-header">Item A</div>
+      <div class="info-box-content">
+        Detailed information about Item A.
+      </div>
+    </div>
+    <div class="info-box" data-name="Item B" data-category="Category 2" data-date="2022-12-01">
+      <div class="info-box-header">Item B</div>
+      <div class="info-box-content">
+        Detailed information about Item B.
+      </div>
+    </div>
+    <div class="info-box" data-name="Item C" data-category="Category 1" data-date="2023-02-15">
+      <div class="info-box-header">Item C</div>
+      <div class="info-box-content">
+        Detailed information about Item C.
+      </div>
+    </div>
+    <!-- Add more info boxes as needed -->
+  </div>
+
+  <script>
+    // JavaScript Functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const dropdown = document.getElementById('sort-dropdown');
+      const grid = document.getElementById('grid-container');
+      const boxes = Array.from(grid.children);
+
+      // Add click event to toggle visibility of content
+      boxes.forEach(box => {
+        box.addEventListener('click', () => {
+          box.classList.toggle('expanded');
+        });
+      });
+
+      // Sort functionality
+      dropdown.addEventListener('change', () => {
+        const sortBy = dropdown.value;
+
+        boxes.sort((a, b) => {
+          const aData = a.dataset[sortBy].toLowerCase();
+          const bData = b.dataset[sortBy].toLowerCase();
+
+          if (sortBy === 'date') {
+            return new Date(aData) - new Date(bData);
+          }
+
+          if (aData < bData) return -1;
+          if (aData > bData) return 1;
+          return 0;
+        });
+
+        // Reorder grid based on sorted boxes
+        boxes.forEach(box => grid.appendChild(box));
+      });
+    });
+  </script>
+</body>
+</html>
