@@ -9,7 +9,7 @@
     h1 {
       text-align: center;
       margin-bottom: 10px;
-      color: #0073e6;
+      color: #002a54;
     }
 
     p {
@@ -52,7 +52,7 @@
     }
 
     .info-box-header {
-      background-color: #0073e6;
+      background-color: #002a54;
       color: white;
       padding: 10px;
       font-size: 1.1em;
@@ -76,10 +76,10 @@
       text-decoration: none;
       color: #0073e6;
       font-size: 1.2em;
-      border-bottom: 1px solid #0073e6;
+      border-bottom: 1px solid #002a54;
     }
 
     .link a:hover {
-      color: #005bb5;
-      border-bottom: 1px solid #005bb5;
+      color: #001932;
+      border-bottom: 1px solid #001932;
     }
