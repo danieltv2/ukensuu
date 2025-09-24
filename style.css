@@ -57,6 +57,30 @@
       padding: 10px;
       font-size: 1.1em;
     }
+    [data-category="Overordnet"] .info-box-header {
+      background-color: #000654;
+      color: white;
+      padding: 10px;
+      font-size: 1.1em;
+    }
+    [data-category="Elevkanalen"] .info-box-header {
+      background-color: #004053;
+      color: white;
+      padding: 10px;
+      font-size: 1.1em;
+    }
+    [data-category="Lovkrav"] .info-box-header {
+      background-color: #540000;
+      color: white;
+      padding: 10px;
+      font-size: 1.1em;
+    }
+    [data-category="Teknologi og brukere"] .info-box-header {
+      background-color: #002a54;
+      color: white;
+      padding: 10px;
+      font-size: 1.1em;
+    }
 
     .info-box-content {
       padding: 15px;
