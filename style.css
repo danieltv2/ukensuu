@@ -1,109 +1,172 @@
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-      background-color: #f8f8f8;
-      color: #333;
-    }
+body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f8f8f8;
+      }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      color: #002a54;
-    }
+      h1 {
+        text-align: center;
+        color: #0073e6;
+      }
 
-    p {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 1.2em;
-    }
+      html {
+        scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+      }
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
+      .controls,
+      .featured-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
-    .dropdown {
-      font-size: 1em;
-      padding: 5px 8px;
-    }
+      .controls select {
+        font-size: 1em;
+        padding: 5px;
+      }
 
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-      padding: 10px;
-    }
+      .featured-container {
+        border: 2px solid #0073e6;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #eef6fc;
+      }
 
-    .info-box {
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+      .featured-container h2 {
+        color: #0073e6;
+        margin-top: 0;
+      }
 
-    .info-box:hover {
-      transform: translateY(-3px);
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    }
+      .featured-container a {
+        color: #0073e6;
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: bold;
+        border: 2px solid #0073e6;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: inline-block;
+      }
 
-    .info-box-header {
-      background-color: #002a54;
-      color: white;
-      padding: 10px;
-      font-size: 1.1em;
-    }
-    [data-category="Overordnet"] .info-box-header {
-      background-color: #000654;
-      color: white;
-      padding: 10px;
-      font-size: 1.1em;
-    }
-    [data-category="Elevkanalen"] .info-box-header {
-      background-color: #004053;
-      color: white;
-      padding: 10px;
-      font-size: 1.1em;
-    }
-    [data-category="Lovkrav"] .info-box-header {
-      background-color: #540000;
-      color: white;
-      padding: 10px;
-      font-size: 1.1em;
-    }
-    [data-category="Teknologi og brukere"] .info-box-header {
-      background-color: #002a54;
-      color: white;
-      padding: 10px;
-      font-size: 1.1em;
-    }
+      .featured-container a:hover,
+      .featured-container a:focus {
+        background-color: #0073e6;
+        color: white;
+        outline: 2px solid #005bb5;
+      }
 
-    .info-box-content {
-      padding: 15px;
-      display: none; /* Initially collapsed */
-    }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        padding: 20px;
+      }
 
-    .info-box.expanded .info-box-content {
-      display: block;
-    }
+      /* Info box styling */
+      .info-box {
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        align-self: start;
+      }
 
-    .link {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+      .info-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-    .link a {
-      text-decoration: none;
-      color: #002a54;
-      font-size: 1.2em;
-      border-bottom: 1px solid #002a54;
-    }
+      /* Button serving as header */
+      .info-box button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background-color: #0073e6;
+        color: white;
+        text-align: left;
+        font-size: 1.1em;
+        cursor: pointer;
+        border-radius: 5px 5px 0 0;
+        display: block;
+      }
 
-    .link a:hover {
-      color: #001932;
-      border-bottom: 1px solid #001932;
-    }
+      .info-box button:focus {
+        outline: 2px solid #005bb5;
+      }
+
+      .info-box button:hover {
+        background-color: #005bb5;
+      }
+
+      /* Content (expandable) */
+      .info-box section {
+        position: static;
+        overflow: hidden;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: white;
+        border-top: 1px solid #ddd;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-height: 0; /* Collapsed by default */
+        opacity: 0;
+        transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+      }
+
+      .info-box-wrapper {
+        display: flex;
+        flex-direction: column; /* Stacks the button and section vertically */
+      }
+
+      .info-box[aria-expanded="true"] section {
+        max-height: 500px;
+        opacity: 1;
+      }
+
+      .info-box section p {
+        margin: 0;
+        padding: 15px;
+        font-size: 0.95em;
+        line-height: 1.5;
+      }
+
+      .info-box section a {
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #0073e6;
+        text-decoration: none;
+        border: 1px solid #0073e6;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .info-box section a:hover,
+      .info-box section a:focus {
+        color: white;
+        background-color: #0073e6;
+        outline: 1px solid #005bb5;
+      }
+
+      /* Category colors */
+      .info-box[data-category="Category 1"] button {
+        background-color: #ff6f61;
+      }
+
+      .info-box[data-category="Category 2"] button {
+        background-color: #6bcf63;
+      }
+
+      .info-box[data-category="Category 3"] button {
+        background-color: #f7c948;
+      }
+
+      .info-box[data-category="Category 4"] button {
+        background-color: #4a90e2;
+      }
+
+      .info-box[data-category="Category 5"] button {
+        background-color: #a683e3;
+      }

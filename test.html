@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+              <html lang="en">
+  <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0073e6;
+    }
+
+    .quiz-container {
+      max-width: 800px;
+      margin: 0 auto; /* Center container */
+      padding: 20px;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    iframe.quiz {
+      width: 100%;
+      height: 600px; /* Adjust height as necessary */
+      border: none;
+    }
+  
+
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ukens UU - Quiz</title>
+</section>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0073e6;
+    }
+
+    .quiz-container {
+      max-width: 800px;
+      margin: 0 auto; /* Center container */
+      padding: 20px;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    iframe.quiz {
+      width: 100%;
+      height: 600px; /* Adjust height as necessary */
+      border: none;
+    }
+  </style>
+  </head>
+<body>
+  <header>
+    <!-- Reference the infobox dynamically -->
+    <h1>Ukens UU 43</h1>
+    
+  </header>
+
+  <!-- Quiz Container -->
+  <section class="quiz-container">
+    <iframe 
+      class="quiz" 
+      src="https://docs.google.com/forms/d/e/1FAIpQLSc9GzbIUQLqX7bvSgCR__PKu3OoYjpCzV_TP7PES7M6exYjfg/viewform?embedded=true" 
+      title="Embedded Quiz"
+      loading="lazy"
+      height="8000"
+      width="100%"
+      >
+    </iframe>
+  </section>
+</body>
+</html>
+
+							<script>
+                            	document.addEventListener("DOMContentLoaded", () => {
+  // Extract query parameter (e.g., "?item=box-b")
+  const params = new URLSearchParams(window.location.search);
+  const item = params.get("item"); // Get 'item' parameter (e.g., "box-b")
+
+  // Update header dynamically
+  if (item) {
+    const header = document.querySelector("h1");
+    const itemName = item.replace("box-", "Item ").toUpperCase(); // Convert 'box-b' -> 'Item B'
+    header.textContent = `Featured: ${itemName} Quiz`;
+  }
+});
+
+
+							</script>
+                        </body>
+                        </html>
