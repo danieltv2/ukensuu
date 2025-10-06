@@ -121,7 +121,13 @@ body {
       }
 
       .info-box[aria-expanded="true"] section {
-        max-height: 500px;
+        max-height: 1000px;
+        opacity: 1;
+      }
+
+            .info-box[aria-expanded="true"]{
+        grid-column: 1 / -1; /* Span all columns when expanded */
+        z-index: 1; /* Ensure it appears above other boxes */
         opacity: 1;
       }
 
@@ -132,7 +138,7 @@ body {
         line-height: 1.5;
       }
 
-      .info-box section a {
+      #link-button {
         display: inline-block;
         margin-top: 10px;
         font-size: 0.9em;
@@ -151,22 +157,22 @@ body {
       }
 
       /* Category colors */
-      .info-box[data-category="Category 1"] button {
-        background-color: #ff6f61;
+      .info-box[data-category="Lovkrav"] button {
+        background-color: #860000;
       }
 
-      .info-box[data-category="Category 2"] button {
-        background-color: #6bcf63;
+      .info-box[data-category="UU -prinsipper"] button {
+        background-color: #006845;
       }
 
-      .info-box[data-category="Category 3"] button {
-        background-color: #f7c948;
+      .info-box[data-category="Teknologi og brukere"] button {
+        background-color: #522c00;
       }
 
-      .info-box[data-category="Category 4"] button {
-        background-color: #4a90e2;
+      .info-box[data-category="Elevkanalen"] button {
+        background-color: #004a68;
       }
 
       .info-box[data-category="Category 5"] button {
-        background-color: #a683e3;
+        background-color: #380058;
       }
