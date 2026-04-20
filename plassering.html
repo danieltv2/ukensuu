@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A4 Aspect Ratio Container</title>
+  <style>
+    /* General styles */
+    html, body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      height: 100%; /* Full viewport height */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    .container-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+      height: 100%;
+      padding: 0.5rem;
+    }
+
+    /* A4 Container */
+    .a4-container {
+      position: relative;
+      width: 90vw; /* Take up to 90% of viewport width */
+      height: calc(90vw * (297 / 210)); /* Maintain A4 aspect ratio: 297mm / 210mm */
+      max-width: calc(100vh * (210 / 297)); /* Prevent the width from exceeding the viewport's height-based ratio */
+      max-height: 90vh; /* Take up to 90% of viewport height */
+      aspect-ratio: 210 / 297; /* Enforce portrait orientation */
+      border: 2px solid #333; /* Border for visibility */
+      background-color: #fff;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden; /* Prevent content overflow */
+    }
+
+    /* Text Box */
+    .text-box {
+      position: absolute;
+      width: auto;
+      max-width: 50%; /* Prevent the text box from being too wide */
+      padding: 0.5rem;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 4px;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      transition: left 0.2s, top 0.2s;
+    }
+
+    /* Inputs Section */
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .input-group label {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 4rem;
+      padding: 5px;
+      text-align: center;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-wrapper">
+    <!-- A4 Container -->
+    <div class="a4-container" id="a4-container">
+      <div class="text-box" id="text-box">Your Text</div>
+    </div>
+
+    <!-- Inputs Section -->
+    <div class="inputs">
+      <div class="input-group">
+        <label for="horizontal-position">Horizontal (%)</label>
+        <input
+          type="number"
+          id="horizontal-position"
+          value="50"
+          min="0"
+          max="100"
+        />
+      </div>
+      <div class="input-group">
+        <label for="vertical-position">Vertical (%)</label>
+        <input
+          type="number"
+          id="vertical-position"
+          value="50"
+          min="0"
+          max="100"
+        />
+      </div>
+      <button onclick="updatePosition()">Update Position</button>
+    </div>
+  </div>
+
+  <script>
+    const textBox = document.getElementById("text-box");
+    const a4Container = document.getElementById("a4-container");
+
+    function updatePosition() {
+      // Get input values
+      const horizontalInput = parseFloat(document.getElementById("horizontal-position").value);
+      const verticalInput = parseFloat(document.getElementById("vertical-position").value);
+
+      // Clamp values to ensure they stay within bounds (0-100%)
+      const clampedHorizontal = Math.min(Math.max(horizontalInput, 0), 100);
+      const clampedVertical = Math.min(Math.max(verticalInput, 0), 100);
+
+      // Update the style of the text box
+      textBox.style.left = `${clampedHorizontal}%`;
+      textBox.style.top = `${clampedVertical}%`;
+      textBox.style.transform = "translate(-50%, -50%)"; // Keep the box centered
+    }
+
+    // Ensure the initial position is within the container
+    updatePosition();
+  </script>
+</body>
+</html>
