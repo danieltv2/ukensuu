@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="nob">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ukens UU</title>
+    
+      <link rel="stylesheet" type="text/css" href="style.css">
+    
+  </head>
+  <body>
+    <!-- Main Header -->
+    <header id="top-of-page">
+      <h1>Ukens UU - Uke 43</h1>
+      <p>Her kan du lese deg opp på universell utforming. Du kan lære om akkurat det du trenger på Elevkanalen, nyheter og grunnleggende prinsipper for tilgjengelighet. Temaene er delt inn i kategorier og du kan utforske dem slik du selv vil. Har du sett ukens tema? Da kan du ta ukens test!</p>
+    </header>
+
+    <!-- Featured Section -->
+    <section class="featured-container" aria-labelledby="featured-heading">
+      <h2 id="featured-heading">Ukens Tema</h2>
+      <a href="#box-b" class="featured-link">WCAG -prinsipper</a>
+      <a href="test.html" class="featured-link">Ta ukens test!</a>
+    </section>
+
+    <h2 class="section-heading">Utforsk innhold</h2>
+
+    <!-- Sorting Controls -->
+    <section class="controls">
+      <label for="sort-options">Sort by:</label>
+      <select id="sort-options">
+        <option value="name">Name</option>
+        <option value="category">Category</option>
+        <option value="date">Date</option>
+      </select>
+    </section>
+
+    <!-- Information Grid -->
+    <section class="grid-container" aria-label="Information Grid">
+      <article class="info-box" data-name="Item A" data-category="Lovkrav" data-date="2025-10-06" id="box-a" aria-expanded="false">
+        <div class="info-box-wrapper">
+          <button aria-controls="content-a" aria-expanded="false">Alternativ tekst</button>
+          <section id="content-a" aria-hidden="true">
+            <h3>Alternativ tekst</h3>
+            <p>Som redaktør har du ansvar for at alt innhold i det digitale læremidlet er tilgjengelig for alle. For å oppnå dette er det viktig å vurdere ikke-tekstlig innhold i kontekst. På den måten er det mulig å ivareta det pedagogiske formålet med innholdet som et tekstalternativ.
+For ikke-tekstlig innhold i tekst bør det pedagogiske formålet i stor grad dekkes i selve teksten. Dette fører til at behovet for utdypende alt-tekster eller lange beskrivelser blir mindre og flere bilder kan ha en ren dekorativ funksjon, med tom alt-tekst.</p>
+            <h4>Elevkanalen</h4>
+            <ul>
+              <li>Bilder
+                <ul>
+                  <li>Ebok</li>
+                  <li>Tekst</li>
+                  <li>Spill</li>
+                </ul>
+              </li>
+            </ul>  
+            <h4>Lær mer</h4>
+            <ul>
+              <li><a href="https://uuu.standard.no/docs/editor/111" target="_blank" rel="noopener">Standard Norge: Gode tekstalternativer</a></li>
+              <li><a href="https://www.uutilsynet.no/wcag-standarden/111-ikke-tekstlig-innhold-niva/87" target="_blank" rel="noopener">UU -tilsynet: Ikke-tekstlig innhold</a></li>
+            </ul>
+            <a id="link-button" href="#top-of-page" class="back-to-top">Tilbake til toppen</a>
+          </section>
+        </div>
+      </article>
+
+      <article class="info-box" data-name="Item C" data-category="Category 3" data-date="2023-03-20" id="box-c" aria-expanded="false">
+        <button aria-controls="content-c" aria-expanded="false">Item C</button>
+        <section id="content-c" aria-hidden="true">
+          <p>Learn more about Item C by expanding this section. This includes additional details.</p>
+          <a href="#top-of-page" class="back-to-top">Tilbake til toppen</a>
+        </section>
+      </article>
+
+      <article class="info-box" data-name="Item B" data-category="Category 2" data-date="2023-01-05" id="box-b" aria-expanded="false">
+        <button aria-controls="content-b" aria-expanded="false">Item B</button>
+        <section id="content-b" aria-hidden="true">
+          <p>This is some information about Item B. Users can toggle this section to expand or collapse content.</p>
+          <a href="#top-of-page" class="back-to-top">Tilbake til toppen</a>
+        </section>
+      </article>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
