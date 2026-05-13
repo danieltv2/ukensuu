@@ -5,64 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A4 Aspect Ratio Container</title>
   <style>
-    /* General styles */
+    /* GENERAL STYLES */
     html, body {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      height: 100%; /* Full viewport height */
-      display: flex;
+      width: 100%;
+      height: 100%;
+      display: flex; /* Use flex to center content */
       justify-content: center;
       align-items: center;
       background-color: #f5f5f5;
       font-family: Arial, sans-serif;
     }
 
-    .container-wrapper {
+    .layout {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
       width: 100%;
       height: 100%;
-      padding: 0.5rem;
+      gap: 1rem;
+      overflow: hidden; /* Prevent layout issues on smaller screens */
+      box-sizing: border-box;
     }
 
-    /* A4 Container */
+    /* A4 CONTAINER */
     .a4-container {
       position: relative;
-      width: 90vw; /* Take up to 90% of viewport width */
-      height: calc(90vw * (297 / 210)); /* Maintain A4 aspect ratio: 297mm / 210mm */
-      max-width: calc(100vh * (210 / 297)); /* Prevent the width from exceeding the viewport's height-based ratio */
-      max-height: 90vh; /* Take up to 90% of viewport height */
-      aspect-ratio: 210 / 297; /* Enforce portrait orientation */
-      border: 2px solid #333; /* Border for visibility */
-      background-color: #fff;
+      background-color: white;
+      border: 2px solid #333;
       box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden; /* Prevent content overflow */
+      overflow: hidden;
+
+      /* Dynamically calculate width/height based on the limiting factor (viewport width or height) */
+      width: calc(100vh * (210 / 297)); /* Use full viewport height for horizontal screens */
+      height: calc(100vw * (297 / 210)); /* Use full viewport width for vertical screens */
+      max-width: 100vw; /* For wider screens, cap the width to viewport width */
+      max-height: 100vh; /* For taller screens, cap the height to viewport height */
+      aspect-ratio: 210 / 297; /* Ensures the A4 aspect ratio */
     }
 
-    /* Text Box */
+    /* TEXT BOX */
     .text-box {
       position: absolute;
-      width: auto;
-      max-width: 50%; /* Prevent the text box from being too wide */
-      padding: 0.5rem;
       background-color: #4caf50;
       color: white;
       border-radius: 4px;
       text-align: center;
+      padding: 0.5rem;
       transform: translate(-50%, -50%);
-      transition: left 0.2s, top 0.2s;
+      max-width: 50%; /* Prevent the box from being too wide */
+      transition: left 0.2s ease, top 0.2s ease;
     }
 
-    /* Inputs Section */
-    .inputs {
+    /* CONTROLS SECTION */
+    .controls {
       display: flex;
+      flex-direction: row;
       flex-wrap: wrap;
       gap: 1rem;
       justify-content: center;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .input-group {
@@ -73,22 +80,23 @@
 
     .input-group label {
       font-size: 0.9rem;
-      margin-bottom: 5px;
+      margin-bottom: 0.5rem;
     }
 
     .input-group input {
       width: 4rem;
-      padding: 5px;
+      padding: 0.5rem;
       text-align: center;
+      font-size: 1rem;
     }
 
     button {
       padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
       background-color: #007bff;
       color: white;
-      border: none;
       border-radius: 4px;
-      font-size: 1rem;
       cursor: pointer;
     }
 
@@ -98,14 +106,15 @@
   </style>
 </head>
 <body>
-  <div class="container-wrapper">
+  <div class="layout">
     <!-- A4 Container -->
     <div class="a4-container" id="a4-container">
+      <!-- Text Box -->
       <div class="text-box" id="text-box">Your Text</div>
     </div>
 
-    <!-- Inputs Section -->
-    <div class="inputs">
+    <!-- Controls Section -->
+    <div class="controls">
       <div class="input-group">
         <label for="horizontal-position">Horizontal (%)</label>
         <input
@@ -139,17 +148,17 @@
       const horizontalInput = parseFloat(document.getElementById("horizontal-position").value);
       const verticalInput = parseFloat(document.getElementById("vertical-position").value);
 
-      // Clamp values to ensure they stay within bounds (0-100%)
+      // Clamp values to keep the text box within the container
       const clampedHorizontal = Math.min(Math.max(horizontalInput, 0), 100);
       const clampedVertical = Math.min(Math.max(verticalInput, 0), 100);
 
-      // Update the style of the text box
+      // Update text box position
       textBox.style.left = `${clampedHorizontal}%`;
       textBox.style.top = `${clampedVertical}%`;
-      textBox.style.transform = "translate(-50%, -50%)"; // Keep the box centered
+      textBox.style.transform = "translate(-50%, -50%)"; // Keep the box properly centered
     }
 
-    // Ensure the initial position is within the container
+    // Initialize the text box's position
     updatePosition();
   </script>
 </body>

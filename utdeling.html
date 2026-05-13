@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Min side</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f1b2d;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* ══ TOP NAV ══ */
+    .top-nav {
+      background: #0f1b2d;
+      border-bottom: 1px solid #1e2e45;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 24px; height: 60px;
+    }
+    .top-nav-left { display: flex; align-items: center; gap: 12px; }
+    .home-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #1e2e45; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #fff; color: #0f1b2d; border: none;
+      border-radius: 20px; padding: 8px 16px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .top-nav-right { display: flex; align-items: center; gap: 12px; }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .user-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: transparent; border: none; cursor: pointer;
+      color: #fff; font-size: 14px; font-weight: 600;
+    }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #4a6cf7;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ══ PAGE HEADER ══ */
+    .page-header { text-align: center; padding: 36px 24px 24px; }
+    .page-title {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 28px; font-weight: 700;
+    }
+    .page-title .avatar { width: 42px; height: 42px; font-size: 15px; }
+
+    /* ══ MAIN TABS ══ */
+    .main-tabs {
+      display: flex; justify-content: center;
+      gap: 8px; flex-wrap: wrap; padding: 0 24px 28px;
+    }
+    .main-tab {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 24px;
+      border: 1.5px solid #2a3d58; background: transparent;
+      color: #b0c4de; font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: all .2s;
+    }
+    .main-tab:hover { border-color: #4a6cf7; color: #fff; }
+    .main-tab.active { background: #fff; color: #0f1b2d; border-color: #fff; }
+
+    /* ══ CONTENT WRAPPER ══ */
+    .delt-content { padding: 0 32px 60px; max-width: 1400px; margin: 0 auto; }
+
+    /* ══ SUB-TABS ══ */
+    .sub-tabs {
+      display: flex; border-bottom: 2px solid #1e2e45; margin-bottom: 0;
+    }
+    .sub-tab {
+      padding: 10px 26px; font-size: 15px; font-weight: 600;
+      color: #b0c4de; background: transparent; border: none;
+      cursor: pointer; position: relative; transition: color .2s;
+    }
+    .sub-tab::after {
+      content: ''; position: absolute;
+      bottom: -2px; left: 0; right: 0; height: 3px;
+      background: #4a6cf7; border-radius: 2px 2px 0 0;
+      opacity: 0; transition: opacity .2s;
+    }
+    .sub-tab.active { color: #fff; }
+    .sub-tab.active::after { opacity: 1; }
+    .sub-tab:hover { color: #fff; }
+
+    /* ══ TAB PANELS ══ */
+    .tab-panel { display: none; padding-top: 24px; }
+    .tab-panel.active { display: block; }
+
+    /* ══ ACTION ROW ══ */
+    .action-row { display: flex; justify-content: center; margin-bottom: 24px; }
+    .primary-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 24px; border-radius: 24px;
+      border: 1.5px solid #b0c4de; background: transparent;
+      color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: all .2s;
+    }
+    .primary-btn:hover { border-color: #fff; background: #1e2e45; }
+    .primary-btn.accent { border-color: #4a6cf7; color: #4a6cf7; }
+    .primary-btn.accent:hover { background: #1e2e45; border-color: #6a8cf9; color: #6a8cf9; }
+
+    /* ══ OPPGAVER FILTER ROW ══ */
+    .filter-row {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap;
+      gap: 12px; margin-bottom: 24px;
+    }
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 8px 18px; border-radius: 20px;
+      border: 1.5px solid #2a3d58; background: transparent;
+      color: #b0c4de; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-tab:hover { border-color: #4a6cf7; color: #fff; }
+    .filter-tab.active { background: #4a6cf7; border-color: #4a6cf7; color: #fff; }
+    .filter-right { display: flex; align-items: center; gap: 10px; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: #1e2e45; border: 1.5px solid #2a3d58;
+      border-radius: 20px; padding: 8px 14px; min-width: 220px;
+    }
+    .search-box input {
+      background: transparent; border: none; outline: none;
+      color: #b0c4de; font-size: 13px; flex: 1;
+    }
+    .search-box input::placeholder { color: #6080a0; }
+    .sort-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #1e2e45; border: 1.5px solid #2a3d58;
+      border-radius: 20px; padding: 8px 14px;
+      color: #b0c4de; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+
+    /* ══ OPPGAVER CARD GRID ══ */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 16px;
+    }
+    @media(max-width:1000px){ .card-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:640px) { .card-grid{ grid-template-columns:1fr; } }
+
+    .card {
+      background: #fff; border-radius: 14px; overflow: hidden;
+      display: flex; flex-direction: column; color: #0f1b2d;
+    }
+    .card-top { display: flex; align-items: stretch; flex: 1; }
+    .card-img { width: 150px; flex-shrink: 0; overflow: hidden; }
+    .card-img-ph {
+      width: 100%; height: 100%; min-height: 120px;
+      display: flex; align-items: center; justify-content: center; font-size: 30px;
+    }
+    .card-body {
+      flex: 1; padding: 14px 14px 8px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .card-badge {
+      align-self: flex-end; display: flex; align-items: center; gap: 4px;
+      font-size: 12px; color: #555; font-weight: 500;
+    }
+    .card-title { font-size: 15px; font-weight: 700; }
+    .card-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; }
+    .card-actions {
+      display: flex; justify-content: flex-end; gap: 8px; padding: 8px 12px 12px;
+    }
+    .card-action-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid #cdd; background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #555; transition: all .2s;
+    }
+    .card-action-btn:hover { background: #f0f4ff; border-color: #4a6cf7; color: #4a6cf7; }
+    .card-action-btn svg { width: 15px; height: 15px; }
+
+    /* ══════════════════════════════════════════════
+       ELEVFORSIDER — layout
+    ══════════════════════════════════════════════ */
+    .ef-toolbar {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap;
+      gap: 12px; margin-bottom: 20px;
+    }
+    .view-toggle {
+      display: flex; background: #1e2e45;
+      border-radius: 22px; padding: 4px; gap: 2px;
+    }
+    .view-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 16px; border-radius: 18px; border: none;
+      background: transparent; color: #b0c4de;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
+    }
+    .view-btn.active { background: #fff; color: #0f1b2d; }
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* ══════════════════════════════════════════════
+       DAY CALENDAR
+    ══════════════════════════════════════════════ */
+    .cal-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media(max-width:820px){ .cal-layout{ grid-template-columns:1fr; } }
+
+    /* ── Mini month picker (left panel) ── */
+    .mini-month {
+      background: #162236;
+      border-radius: 14px;
+      padding: 16px;
+      position: sticky; top: 20px;
+    }
+    .mini-month-nav {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 14px;
+    }
+    .mini-month-title {
+      font-size: 14px; font-weight: 700; color: #fff;
+    }
+    .mini-nav-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1.5px solid #2a3d58; background: transparent;
+      color: #b0c4de; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; transition: all .2s;
+    }
+    .mini-nav-btn:hover { border-color: #4a6cf7; color: #fff; }
+
+    .mini-grid {
+      display: grid; grid-template-columns: repeat(7,1fr);
+      gap: 2px;
+    }
+    .mini-dow {
+      text-align: center; font-size: 10px; font-weight: 700;
+      color: #4a6070; text-transform: uppercase;
+      padding-bottom: 6px; letter-spacing: .04em;
+    }
+    .mini-cell {
+      text-align: center; font-size: 12px; font-weight: 500;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #b0c4de; transition: all .15s;
+      position: relative;
+    }
+    .mini-cell:hover { background: #1e2e45; color: #fff; }
+    .mini-cell.today { border: 1.5px solid #4a6cf7; color: #93c5fd; font-weight: 700; }
+    .mini-cell.selected { background: #4a6cf7 !important; color: #fff !important; font-weight: 700; }
+    .mini-cell.other-month { color: #2e4060; }
+    .mini-cell.has-event::after {
+      content: ''; position: absolute;
+      bottom: 3px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; border-radius: 50%;
+      background: #4a6cf7;
+    }
+    .mini-cell.selected.has-event::after { background: #fff; }
+    .mini-cell.weekend { color: #4a6070; }
+    .mini-cell.weekend:hover { color: #6a8090; }
+
+    /* ── Day view (right panel) ── */
+    .day-view {
+      background: #162236;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .day-header {
+      padding: 16px 20px;
+      border-bottom: 1.5px solid #1e2e45;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .day-nav-btns { display: flex; gap: 6px; }
+    .day-nav-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid #2a3d58; background: transparent;
+      color: #b0c4de; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; transition: all .2s;
+    }
+    .day-nav-btn:hover { border-color: #4a6cf7; color: #fff; }
+    .day-today-btn {
+      padding: 6px 14px; border-radius: 16px;
+      border: 1.5px solid #2a3d58; background: transparent;
+      color: #b0c4de; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+    }
+    .day-today-btn:hover { border-color: #4a6cf7; color: #fff; }
+
+    .day-title-block { text-align: center; flex: 1; }
+    .day-week-num {
+      font-size: 11px; font-weight: 700; color: #4a6cf7;
+      text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2px;
+    }
+    .day-name {
+      font-size: 22px; font-weight: 800; color: #fff; line-height: 1.1;
+    }
+    .day-date {
+      font-size: 13px; color: #7090b0; font-weight: 500; margin-top: 2px;
+    }
+    .day-name.is-today { color: #4a6cf7; }
+
+    /* Weekday strip */
+    .week-strip {
+      display: grid; grid-template-columns: repeat(5,1fr);
+      border-bottom: 1.5px solid #1e2e45;
+    }
+    .strip-day {
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: background .15s;
+      border-right: 1px solid #1a2840;
+      position: relative;
+    }
+    .strip-day:last-child { border-right: none; }
+    .strip-day:hover { background: #1a2d45; }
+    .strip-day.active { background: #1e3450; }
+    .strip-day.active::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px; background: #4a6cf7;
+    }
+    .strip-dow {
+      font-size: 10px; font-weight: 700; color: #4a6070;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .strip-num {
+      font-size: 18px; font-weight: 700; color: #fff; line-height: 1.2;
+      margin-top: 2px;
+    }
+    .strip-num.today {
+      background: #4a6cf7; color: #fff;
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 2px auto 0; font-size: 14px;
+    }
+    .strip-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #4a6cf7; margin: 3px auto 0;
+      opacity: 0;
+    }
+    .strip-dot.visible { opacity: 1; }
+
+    /* Day event list */
+    .day-events { padding: 16px 20px; min-height: 260px; }
+    .day-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 200px; color: #3a5070;
+      gap: 8px;
+    }
+    .day-empty svg { width: 36px; height: 36px; opacity: .4; }
+    .day-empty p { font-size: 14px; }
+
+    .day-event-item {
+      display: flex; align-items: stretch;
+      background: #111d30; border-radius: 10px;
+      overflow: hidden; margin-bottom: 10px;
+      cursor: pointer; transition: box-shadow .2s;
+    }
+    .day-event-item:hover { box-shadow: 0 2px 16px #0006; }
+    .day-event-stripe { width: 5px; flex-shrink: 0; }
+    .day-event-body { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .day-event-title { font-size: 14px; font-weight: 700; color: #fff; }
+    .day-event-meta { font-size: 12px; color: #5a7898; display: flex; flex-wrap: wrap; gap: 10px; }
+    .day-event-badge {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 9px; border-radius: 10px;
+      align-self: flex-start; margin-top: 2px;
+    }
+    .day-event-span {
+      font-size: 11px; color: #4a6cf7; font-weight: 600;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .day-event-actions { display: flex; align-items: center; gap: 6px; padding: 0 12px; }
+
+    /* ══ ALL ELEVFORSIDER (list) ══ */
+    .ef-list { display: flex; flex-direction: column; gap: 10px; }
+    .ef-list-item {
+      display: flex; align-items: stretch;
+      background: #fff; border-radius: 12px; overflow: hidden;
+      color: #0f1b2d; transition: box-shadow .2s; cursor: pointer;
+    }
+    .ef-list-item:hover { box-shadow: 0 4px 20px #0009; }
+    .ef-list-stripe { width: 6px; flex-shrink: 0; }
+    .ef-list-img { width: 88px; flex-shrink: 0; overflow: hidden; }
+    .ef-list-img-ph {
+      width: 100%; height: 100%; min-height: 70px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .ef-list-body {
+      flex: 1; padding: 12px 14px;
+      display: flex; flex-direction: column;
+      gap: 4px; justify-content: center;
+    }
+    .ef-list-title { font-size: 15px; font-weight: 700; }
+    .ef-list-meta { font-size: 12px; color: #666; display: flex; gap: 14px; flex-wrap: wrap; }
+    .ef-list-badge {
+      padding: 2px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 600;
+    }
+    .ef-list-actions { display: flex; align-items: center; gap: 6px; padding: 0 14px; }
+  </style>
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<nav class="top-nav">
+  <div class="top-nav-left">
+    <button class="home-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
+      </svg>
+    </button>
+    <button class="back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Tilbake
+    </button>
+  </div>
+  <div class="top-nav-right">
+    <button class="icon-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21 4.318 12.682a4.5 4.5 0 010-6.364z"/>
+      </svg>
+    </button>
+    <button class="icon-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+      </svg>
+    </button>
+    <button class="icon-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+    </button>
+    <button class="user-btn">
+      <div class="avatar">DB</div>
+      Daniel Bajer
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ══ -->
+<div class="page-header">
+  <h1 class="page-title">
+    <div class="avatar">DB</div>
+    Min side
+  </h1>
+</div>
+
+<!-- ══ MAIN TABS ══ -->
+<div class="main-tabs">
+  <button class="main-tab" onclick="switchMainTab(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="17" height="17">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+    </svg>
+    Generelt
+  </button>
+  <button class="main-tab" onclick="switchMainTab(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="17" height="17">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+    </svg>
+    Preferanser
+  </button>
+  <button class="main-tab" onclick="switchMainTab(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="17" height="17">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21 4.318 12.682a4.5 4.5 0 010-6.364z"/>
+    </svg>
+    Favoritter
+  </button>
+  <button class="main-tab active" onclick="switchMainTab(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="17" height="17">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+    </svg>
+    Delt med elev
+  </button>
+  <button class="main-tab" onclick="switchMainTab(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="17" height="17">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+    Grupper og elever
+  </button>
+</div>
+
+<!-- ══ DELT MED ELEV ══ -->
+<div class="delt-content">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSubTab(this,'oppgaver')">Oppgaver</button>
+    <button class="sub-tab" onclick="switchSubTab(this,'elevforsider')">Elevforsider</button>
+  </div>
+
+  <!-- ══════════════════ OPPGAVER ══════════════════ -->
+  <div id="oppgaver" class="tab-panel active">
+    <div class="action-row">
+      <button class="primary-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+        Lag ny oppgave
+      </button>
+    </div>
+    <div class="filter-row">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="switchFilter(this)">Utkast &nbsp;(15)</button>
+        <button class="filter-tab" onclick="switchFilter(this)">Aktive oppgaver &nbsp;(3)</button>
+        <button class="filter-tab" onclick="switchFilter(this)">Tidligere oppgaver &nbsp;(5)</button>
+        <button class="filter-tab" onclick="switchFilter(this)">Delt &nbsp;(1)</button>
+      </div>
+      <div class="filter-right">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+          </svg>
+          <input type="text" placeholder="Søk i elevoppgaver"/>
+        </div>
+        <button class="sort-btn">
+          Nyeste først
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="12" height="12">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="card-grid" id="oppgaver-grid"></div>
+  </div>
+
+  <!-- ══════════════════ ELEVFORSIDER ══════════════════ -->
+  <div id="elevforsider" class="tab-panel">
+    <div class="action-row">
+      <button class="primary-btn accent">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+        </svg>
+        Utforsk
+      </button>
+    </div>
+
+    <div class="ef-toolbar">
+      <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+        </svg>
+        <input type="text" placeholder="Søk i elevforsider"/>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btn-cal" onclick="switchView('calendar')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Kalender
+        </button>
+        <button class="view-btn" id="btn-list" onclick="switchView('list')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          </svg>
+          Alle elevforsider
+        </button>
+      </div>
+    </div>
+
+    <!-- CALENDAR VIEW -->
+    <div id="view-calendar" class="view-panel active">
+      <div class="cal-layout">
+
+        <!-- Mini month picker -->
+        <div class="mini-month">
+          <div class="mini-month-nav">
+            <button class="mini-nav-btn" onclick="changePickerMonth(-1)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="mini-month-title" id="picker-title"></span>
+            <button class="mini-nav-btn" onclick="changePickerMonth(1)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <div class="mini-grid" id="mini-grid"></div>
+        </div>
+
+        <!-- Day view -->
+        <div class="day-view">
+          <div class="day-header">
+            <div class="day-nav-btns">
+              <button class="day-nav-btn" onclick="changeDay(-1)" title="Forrige dag">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button class="day-nav-btn" onclick="changeDay(1)" title="Neste dag">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+            <div class="day-title-block">
+              <div class="day-week-num" id="day-week-num"></div>
+              <div class="day-name" id="day-name"></div>
+              <div class="day-date" id="day-date"></div>
+            </div>
+            <button class="day-today-btn" onclick="goToday()">I dag</button>
+          </div>
+
+          <!-- Weekday strip for the current week -->
+          <div class="week-strip" id="week-strip"></div>
+
+          <!-- Events for the selected day -->
+          <div class="day-events" id="day-events"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div id="view-list" class="view-panel">
+      <div class="ef-list" id="ef-list-container"></div>
+    </div>
+  </div><!-- /elevforsider -->
+</div><!-- /delt-content -->
+
+
+<script>
+/* ════════════════════════════════════════
+   LOCALE HELPERS
+════════════════════════════════════════ */
+const NO_DAYS_FULL  = ['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
+const NO_DAYS_SHORT = ['Søn','Man','Tir','Ons','Tor','Fre','Lør'];
+const NO_DAYS_MIN   = ['S','M','T','O','T','F','L'];
+const NO_MONTHS     = ['Januar','Februar','Mars','April','Mai','Juni',
+                       'Juli','August','September','Oktober','November','Desember'];
+const NO_MONTHS_LOW = ['januar','februar','mars','april','mai','juni',
+                       'juli','august','september','oktober','november','desember'];
+
+function isoWeekNumber(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+}
+
+function sameDay(a, b) {
+  return a.getFullYear() === b.getFullYear() &&
+         a.getMonth()    === b.getMonth()    &&
+         a.getDate()     === b.getDate();
+}
+
+function addDays(d, n) {
+  const r = new Date(d); r.setDate(r.getDate() + n); return r;
+}
+
+function weekMonday(d) {
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const m = new Date(d); m.setDate(d.getDate() + diff); m.setHours(0,0,0,0);
+  return m;
+}
+
+/* ════════════════════════════════════════
+   ELEVFORSIDER DATA
+   Each entry has start + end date (inclusive, weekdays only matters for display)
+════════════════════════════════════════ */
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+function d(y,m,day){ const r=new Date(y,m-1,day); r.setHours(0,0,0,0); return r; }
+
+const elevforsider = [
+  {
+    id:1, title:'Norgeshistorie', emoji:'📄', bg:'#dbeafe',
+    color:'#3b82f6', group:'8B', badge:'Aktiv',
+    start: d(2026,5,11), end: d(2026,5,15),   // Mon–Fri, 1 week
+    desc: 'Gjennomgang av norsk historie fra vikingtiden til i dag.'
+  },
+  {
+    id:2, title:'Geografi', emoji:'🌍', bg:'#ede9fe',
+    color:'#7c3aed', group:'9A', badge:'Utkast',
+    start: d(2026,5,12), end: d(2026,5,22),   // spans 2 weeks
+    desc: 'Kartlesing, landformer og verdensdelene.'
+  },
+  {
+    id:3, title:'Naturfag', emoji:'🔬', bg:'#ccfbf1',
+    color:'#14b8a6', group:'7C', badge:'Aktiv',
+    start: d(2026,5,13), end: d(2026,5,16),
+    desc: 'Celler, fotosyntese og energikretsløp.'
+  },
+  {
+    id:4, title:'Norsk litteratur', emoji:'📚', bg:'#fce7f3',
+    color:'#ec4899', group:'8A', badge:'Delt',
+    start: d(2026,5,15), end: d(2026,5,29),   // spans 3 weeks
+    desc: 'Analyse av norske klassikere og moderne tekster.'
+  },
+  {
+    id:5, title:'Matematikk', emoji:'📐', bg:'#fef3c7',
+    color:'#f59e0b', group:'9B', badge:'Utkast',
+    start: d(2026,5,19), end: d(2026,5,22),
+    desc: 'Algebra, likninger og geometri.'
+  },
+  {
+    id:6, title:'Samfunnsfag', emoji:'🏛️', bg:'#f0fdf4',
+    color:'#22c55e', group:'7A', badge:'Aktiv',
+    start: d(2026,5,25), end: d(2026,6,5),    // spans into next month
+    desc: 'Demokrati, menneskerettigheter og mediebruk.'
+  },
+];
+
+/* Events active on a given date */
+function eventsOnDay(date) {
+  return elevforsider.filter(ev =>
+    date >= ev.start && date <= ev.end
+  );
+}
+
+/* All dates that have at least one event (for mini-calendar dots) */
+function hasEventOnDate(date) {
+  return eventsOnDay(date).length > 0;
+}
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let selectedDay   = new Date(TODAY);
+let pickerMonth   = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+
+/* ════════════════════════════════════════
+   MINI MONTH PICKER
+════════════════════════════════════════ */
+function renderMiniMonth() {
+  const yr  = pickerMonth.getFullYear();
+  const mo  = pickerMonth.getMonth();
+
+  document.getElementById('picker-title').textContent =
+    `${NO_MONTHS[mo]} ${yr}`;
+
+  const grid = document.getElementById('mini-grid');
+  grid.innerHTML = '';
+
+  // Day-of-week headers Mon–Sun
+  const dowOrder = [1,2,3,4,5,6,0];
+  const dowLabels = ['M','T','O','T','F','L','S'];
+  dowLabels.forEach(l => {
+    const h = document.createElement('div');
+    h.className = 'mini-dow'; h.textContent = l;
+    grid.appendChild(h);
+  });
+
+  // First day of month
+  const firstOfMonth = new Date(yr, mo, 1);
+  // What weekday is it? (0=Sun…6=Sat) → shift so Mon=0
+  let startDow = firstOfMonth.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+
+  const daysInMonth = new Date(yr, mo+1, 0).getDate();
+
+  // Leading blanks (prev month)
+  const prevMonthDays = new Date(yr, mo, 0).getDate();
+  for (let i = 0; i < startDow; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'mini-cell other-month';
+    cell.textContent = prevMonthDays - startDow + 1 + i;
+    grid.appendChild(cell);
+  }
+
+  // Current month days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(yr, mo, day);
+    const dow  = date.getDay(); // 0=Sun,6=Sat
+    const isWeekend = dow === 0 || dow === 6;
+    const isTod = sameDay(date, TODAY);
+    const isSel = sameDay(date, selectedDay);
+    const hasEv = hasEventOnDate(date);
+
+    const cell = document.createElement('div');
+    let cls = 'mini-cell';
+    if (isWeekend) cls += ' weekend';
+    if (isTod)    cls += ' today';
+    if (isSel)    cls += ' selected';
+    if (hasEv)    cls += ' has-event';
+    cell.className = cls;
+    cell.textContent = day;
+
+    cell.addEventListener('click', () => {
+      selectedDay = date;
+      renderDayView();
+      renderMiniMonth();
+    });
+    grid.appendChild(cell);
+  }
+
+  // Trailing blanks
+  const totalCells = startDow + daysInMonth;
+  const trailing = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= trailing; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'mini-cell other-month';
+    cell.textContent = i;
+    grid.appendChild(cell);
+  }
+}
+
+function changePickerMonth(dir) {
+  pickerMonth.setMonth(pickerMonth.getMonth() + dir);
+  renderMiniMonth();
+}
+
+/* ════════════════════════════════════════
+   DAY VIEW
+════════════════════════════════════════ */
+function renderDayView() {
+  const isTod  = sameDay(selectedDay, TODAY);
+  const dow    = selectedDay.getDay(); // 0=Sun
+  const wk     = isoWeekNumber(selectedDay);
+  const dayNum = selectedDay.getDate();
+  const mo     = selectedDay.getMonth();
+  const yr     = selectedDay.getFullYear();
+
+  document.getElementById('day-week-num').textContent = `Uke ${wk}`;
+
+  const nameEl = document.getElementById('day-name');
+  nameEl.textContent = NO_DAYS_FULL[dow];
+  nameEl.className   = 'day-name' + (isTod ? ' is-today' : '');
+
+  document.getElementById('day-date').textContent =
+    `${dayNum}. ${NO_MONTHS_LOW[mo]} ${yr}`;
+
+  renderWeekStrip();
+  renderDayEvents();
+
+  // Keep picker month in sync if we navigate far
+  if (pickerMonth.getFullYear() !== yr || pickerMonth.getMonth() !== mo) {
+    pickerMonth = new Date(yr, mo, 1);
+    renderMiniMonth();
+  } else {
+    renderMiniMonth(); // refresh selection highlight
+  }
+}
+
+function renderWeekStrip() {
+  const mon = weekMonday(selectedDay);
+  const strip = document.getElementById('week-strip');
+  strip.innerHTML = '';
+
+  for (let i = 0; i < 5; i++) {  // Mon–Fri only
+    const date   = addDays(mon, i);
+    const dow    = date.getDay();
+    const isTod  = sameDay(date, TODAY);
+    const isSel  = sameDay(date, selectedDay);
+    const hasEv  = hasEventOnDate(date);
+
+    const cell  = document.createElement('div');
+    cell.className = 'strip-day' + (isSel ? ' active' : '');
+
+    const numHtml = isTod
+      ? `<div class="strip-num today">${date.getDate()}</div>`
+      : `<div class="strip-num">${date.getDate()}</div>`;
+
+    cell.innerHTML = `
+      <div class="strip-dow">${NO_DAYS_SHORT[dow]}</div>
+      ${numHtml}
+      <div class="strip-dot${hasEv ? ' visible' : ''}"></div>`;
+
+    cell.addEventListener('click', () => {
+      selectedDay = date;
+      renderDayView();
+    });
+    strip.appendChild(cell);
+  }
+}
+
+function renderDayEvents() {
+  const events = eventsOnDay(selectedDay);
+  const container = document.getElementById('day-events');
+  container.innerHTML = '';
+
+  if (events.length === 0) {
+    container.innerHTML = `
+      <div class="day-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p>Ingen elevforsider denne dagen</p>
+      </div>`;
+    return;
+  }
+
+  events.forEach(ev => {
+    const spanDays  = Math.round((ev.end - ev.start) / 86400000) + 1;
+    const spanWeeks = Math.round(spanDays / 7);
+    const spanLabel = spanWeeks >= 1
+      ? `${spanWeeks} uke${spanWeeks > 1 ? 'r' : ''}`
+      : `${spanDays} dag${spanDays > 1 ? 'er' : ''}`;
+
+    const fmtDate = d =>
+      `${d.getDate()}. ${NO_MONTHS_LOW[d.getMonth()]}`;
+
+    const item = document.createElement('div');
+    item.className = 'day-event-item';
+    item.innerHTML = `
+      <div class="day-event-stripe" style="background:${ev.color}"></div>
+      <div class="day-event-body">
+        <div class="day-event-title">${ev.emoji} ${ev.title}</div>
+        <div class="day-event-meta">
+          <span>Gruppe: ${ev.group}</span>
+          <span>${fmtDate(ev.start)} – ${fmtDate(ev.end)}</span>
+        </div>
+        <div class="day-event-span">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor" width="12" height="12">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Varighet: ${spanLabel}
+        </div>
+        <div class="day-event-badge"
+             style="background:${ev.color}22;color:${ev.color}">${ev.badge}</div>
+      </div>
+      <div class="day-event-actions">
+        ${eyeBtn()} ${trashBtn()}
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+function changeDay(dir) {
+  // Skip weekends
+  let next = addDays(selectedDay, dir);
+  while (next.getDay() === 0 || next.getDay() === 6) {
+    next = addDays(next, dir);
+  }
+  selectedDay = next;
+  renderDayView();
+}
+
+function goToday() {
+  selectedDay = new Date(TODAY);
+  pickerMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+  renderDayView();
+}
+
+/* ════════════════════════════════════════
+   ALLE ELEVFORSIDER (list)
+════════════════════════════════════════ */
+function renderEfList() {
+  const c = document.getElementById('ef-list-container');
+  const fmtDate = d => `${d.getDate()}. ${NO_MONTHS_LOW[d.getMonth()]}`;
+
+  c.innerHTML = elevforsider.map(ev => {
+    const spanDays  = Math.round((ev.end - ev.start) / 86400000) + 1;
+    const spanWeeks = Math.round(spanDays / 7);
+    const spanLabel = spanWeeks >= 1
+      ? `${spanWeeks} uke${spanWeeks > 1 ? 'r' : ''}`
+      : `${spanDays} dag${spanDays > 1 ? 'er' : ''}`;
+    return `
+    <div class="ef-list-item">
+      <div class="ef-list-stripe" style="background:${ev.color}"></div>
+      <div class="ef-list-img">
+        <div class="ef-list-img-ph" style="background:${ev.bg}">${ev.emoji}</div>
+      </div>
+      <div class="ef-list-body">
+        <div class="ef-list-title">${ev.title}</div>
+        <div class="ef-list-meta">
+          <span>Gruppe: ${ev.group}</span>
+          <span>${fmtDate(ev.start)} – ${fmtDate(ev.end)}</span>
+          <span>${spanLabel}</span>
+        </div>
+      </div>
+      <div style="padding:0 14px;display:flex;align-items:center;">
+        <span class="ef-list-badge"
+              style="background:${ev.color}22;color:${ev.color}">${ev.badge}</span>
+      </div>
+      <div class="ef-list-actions">${eyeBtn()} ${trashBtn()}</div>
+    </div>`}).join('');
+}
+
+/* ════════════════════════════════════════
+   OPPGAVER CARDS
+════════════════════════════════════════ */
+const oppgaverData = [
+  { title:'Mellomkrigstiden', tasks:18, badge:'Utkast', bg:'#b8d4f0', emoji:'🗺️' },
+  { title:'Dydsetikk',        tasks:4,  badge:'Utkast', bg:'#c8e6c9', emoji:'🌳' },
+  { title:'Hvem var Jesus?',  tasks:10, badge:'Utkast', bg:'#c9d9ef', emoji:'🕊️' },
+  { title:'Vikingene (1)',    tasks:32, badge:'Utkast', bg:'#c0e0f8', emoji:'⛵' },
+  { title:'Allergi',          tasks:20, badge:'Utkast', bg:'#d4edda', emoji:'🌿' },
+  { title:'Allergi',          tasks:20, badge:'Utkast', bg:'#fef3c7', emoji:'🌸' },
+];
+
+function renderOppgaverCards() {
+  document.getElementById('oppgaver-grid').innerHTML = oppgaverData.map(d => `
+    <div class="card">
+      <div class="card-top">
+        <div class="card-img">
+          <div class="card-img-ph" style="background:${d.bg}">${d.emoji}</div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge">${pencilSVG()} ${d.badge}</span>
+          <div class="card-title">${d.title}</div>
+          <div class="card-meta">${pencilSVG()} ${d.tasks} oppgaver</div>
+        </div>
+      </div>
+      <div class="card-actions">${eyeBtn()} ${trashBtn()}</div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   TAB / VIEW SWITCHES
+════════════════════════════════════════ */
+function switchMainTab(btn) {
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+function switchSubTab(btn, id) {
+  document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function switchFilter(btn) {
+  btn.closest('.filter-tabs').querySelectorAll('.filter-tab')
+     .forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+function switchView(view) {
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('btn-' + (view === 'calendar' ? 'cal' : 'list')).classList.add('active');
+  document.getElementById('view-' + view).classList.add('active');
+}
+
+/* ════════════════════════════════════════
+   SVG HELPERS
+════════════════════════════════════════ */
+function pencilSVG() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+    stroke="currentColor" width="12" height="12">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15H9v-2.828z"/>
+  </svg>`;
+}
+function eyeBtn() {
+  return `<button class="card-action-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+    </svg>
+  </button>`;
+}
+function trashBtn() {
+  return `<button class="card-action-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+    </svg>
+  </button>`;
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+renderOppgaverCards();
+renderMiniMonth();
+renderDayView();
+renderEfList();
+</script>
+</body>
+</html>
