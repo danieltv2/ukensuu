@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Elevkanalen</title>
+  <title>Elevkanalen – Min side</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,9 +14,30 @@
       color: #1a1a2e;
     }
 
-    /* ══════════════════════════════════
-       TOP NAV
-    ══════════════════════════════════ */
+    /* ── Visible focus ring ── */
+    :focus-visible {
+      outline: 3px solid #4a6cf7;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── Skip link ── */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 8px;
+      z-index: 9999;
+      background: #4a6cf7;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .skip-link:focus { left: 8px; }
+
+    /* ══ TOP NAV ══ */
     .top-nav {
       background: #fff;
       border-bottom: 1px solid #dde3ee;
@@ -36,9 +57,9 @@
       font-weight: 900;
       letter-spacing: .04em;
       color: #1a1a2e;
-      cursor: pointer;
-      user-select: none;
+      text-decoration: none;
     }
+    .nav-logo:focus-visible { border-radius: 6px; }
 
     .nav-right { display: flex; align-items: center; gap: 10px; }
 
@@ -53,43 +74,44 @@
       cursor: pointer; transition: all .2s;
     }
     .ef-dropdown-btn:hover,
-    .ef-dropdown-btn.open { border-color: #4a6cf7; background: #eef1fb; }
-    .ef-chevron { width: 14px; height: 14px; transition: transform .2s; }
-    .ef-dropdown-btn.open .ef-chevron { transform: rotate(180deg); }
+    .ef-dropdown-btn[aria-expanded="true"] {
+      border-color: #4a6cf7; background: #eef1fb;
+    }
+    .ef-dropdown-btn svg.chevron { width: 14px; height: 14px; transition: transform .2s; }
+    .ef-dropdown-btn[aria-expanded="true"] svg.chevron { transform: rotate(180deg); }
 
     .ef-dropdown-menu {
       position: absolute; top: calc(100% + 8px); right: 0;
       background: #fff; border: 1.5px solid #dde3ee;
       border-radius: 16px; min-width: 260px;
       box-shadow: 0 8px 32px #0002;
-      overflow: hidden; display: none; flex-direction: column;
+      overflow: hidden;
       z-index: 200;
+      display: none;
     }
-    .ef-dropdown-menu.open { display: flex; }
+    .ef-dropdown-menu[aria-hidden="false"] { display: block; }
 
-    .ef-dropdown-label {
+    .ef-dropdown-group-label {
       padding: 10px 16px 5px;
       font-size: 10px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .09em; color: #8090b0;
     }
 
-    .ef-dropdown-item {
+    .ef-menu-item {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 16px; cursor: pointer;
       font-size: 14px; font-weight: 500; color: #1a1a2e;
       border: none; background: transparent;
       width: 100%; text-align: left; transition: background .15s;
     }
-    .ef-dropdown-item:hover { background: #f4f6fb; }
-    .ef-dropdown-item.active { background: #eef1fb; color: #4a6cf7; font-weight: 700; }
-
-    .item-dot {
-      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    .ef-menu-item:hover,
+    .ef-menu-item:focus { background: #f4f6fb; outline: none; }
+    .ef-menu-item[aria-current="page"] {
+      background: #eef1fb; color: #4a6cf7; font-weight: 700;
     }
+    .item-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .ef-dropdown-divider { height: 1px; background: #eef1f7; margin: 4px 0; role: separator; }
 
-    .ef-dropdown-divider { height: 1px; background: #eef1f7; margin: 4px 0; }
-
-    /* Calendar link at bottom of dropdown */
     .ef-dropdown-cal-link {
       display: flex; align-items: center; gap: 10px;
       padding: 12px 16px;
@@ -98,21 +120,19 @@
       border-top: 1.5px solid #e8edf8;
       cursor: pointer; transition: background .15s;
       border: none; width: 100%; text-align: left;
-      border-radius: 0 0 14px 14px;
     }
-    .ef-dropdown-cal-link:hover { background: #eaefff; }
-    .ef-dropdown-cal-link svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .ef-dropdown-cal-link .cal-link-sub {
-      font-size: 11px; font-weight: 500; color: #7090b0;
-      margin-top: 1px;
-    }
+    .ef-dropdown-cal-link:hover,
+    .ef-dropdown-cal-link:focus { background: #eaefff; outline: none; }
+    .cal-link-text { display: flex; flex-direction: column; gap: 2px; }
+    .cal-link-sub { font-size: 11px; font-weight: 500; color: #7090b0; }
 
     /* ── Icon buttons ── */
     .icon-btn {
       width: 40px; height: 40px; border-radius: 50%;
       border: 1.5px solid #dde3ee; background: transparent;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: #333; transition: all .2s; position: relative;
+      cursor: pointer; color: #333; transition: all .2s;
+      position: relative;
     }
     .icon-btn:hover { border-color: #4a6cf7; color: #4a6cf7; }
     .notif-badge {
@@ -122,6 +142,7 @@
       width: 17px; height: 17px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       border: 2px solid #fff;
+      pointer-events: none;
     }
     .user-btn {
       display: flex; align-items: center; gap: 8px;
@@ -135,19 +156,17 @@
       background: #4a6cf7;
       display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 700; color: #fff;
+      flex-shrink: 0; aria-hidden: true;
     }
     .user-name { font-size: 14px; font-weight: 600; color: #1a1a2e; }
 
-    /* ══════════════════════════════════
-       PAGE / PANELS
-    ══════════════════════════════════ */
+    /* ══ PAGE ══ */
     .page { padding: 32px 32px 60px; max-width: 1400px; margin: 0 auto; }
-
     .page-panel { display: none; }
     .page-panel.active { display: block; animation: fadeIn .2s ease; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
 
-    /* ── Banner (collection pages) ── */
+    /* ── Banner ── */
     .page-banner {
       border-radius: 16px; padding: 28px 32px;
       margin-bottom: 32px;
@@ -155,10 +174,9 @@
       justify-content: space-between; gap: 16px;
     }
     .page-banner-left { display: flex; flex-direction: column; gap: 4px; }
-    .page-banner-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
+    .page-banner-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
     .page-banner-title { font-size: 26px; font-weight: 800; line-height: 1.1; }
     .page-banner-sub { font-size: 14px; opacity: .75; margin-top: 2px; }
-
     .home-back-btn {
       display: flex; align-items: center; gap: 7px;
       padding: 9px 18px; border-radius: 20px;
@@ -166,7 +184,6 @@
       background: rgba(255,255,255,.15);
       color: #fff; font-size: 13px; font-weight: 700;
       cursor: pointer; transition: all .2s; white-space: nowrap;
-      backdrop-filter: blur(4px);
     }
     .home-back-btn:hover { background: rgba(255,255,255,.3); border-color: #fff; }
 
@@ -180,30 +197,23 @@
     }
     .subsection-heading {
       font-size: 18px; font-weight: 700; color: #1a1a2e;
-      margin: 28px 0 14px; padding-left: 2px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .subsection-heading::before {
-      content: ''; display: inline-block;
-      width: 4px; height: 20px; background: #4a6cf7;
-      border-radius: 2px;
+      margin: 28px 0 14px; padding-left: 14px;
+      border-left: 4px solid #4a6cf7; border-radius: 2px;
     }
 
     /* ── Card grids ── */
     .card-grid {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 20px; margin-bottom: 32px;
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-bottom: 32px;
     }
-    @media(max-width:1100px){ .card-grid{ grid-template-columns:repeat(3,1fr); } }
-    @media(max-width:800px) { .card-grid{ grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:520px) { .card-grid{ grid-template-columns:1fr; } }
+    @media(max-width:1100px){ .card-grid{ grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:800px) { .card-grid{ grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:520px) { .card-grid{ grid-template-columns: 1fr; } }
 
     /* ── Content card ── */
     .content-card {
       background: #fff; border-radius: 12px; overflow: hidden;
       display: flex; flex-direction: column;
-      cursor: pointer; transition: box-shadow .2s, transform .15s;
+      transition: box-shadow .2s, transform .15s;
     }
     .content-card:hover { box-shadow: 0 6px 28px #0002; transform: translateY(-2px); }
 
@@ -218,7 +228,7 @@
     .card-tag {
       position: absolute; bottom: 10px; left: 10px;
       padding: 4px 12px; border-radius: 20px;
-      font-size: 12px; font-weight: 700; backdrop-filter: blur(4px);
+      font-size: 12px; font-weight: 700;
     }
     .card-body {
       padding: 12px 14px 14px;
@@ -242,14 +252,11 @@
     .oppgave-card {
       background: #fff; border-radius: 12px; overflow: hidden;
       display: flex; flex-direction: column;
-      cursor: pointer; border: 1.5px solid #eef1f7;
+      border: 1.5px solid #eef1f7;
       transition: box-shadow .2s, transform .15s;
     }
     .oppgave-card:hover { box-shadow: 0 6px 28px #0002; transform: translateY(-2px); }
-    .oppgave-meta {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 12px; color: #666; margin-top: 4px;
-    }
+    .oppgave-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; margin-top: 4px; }
     .oppgave-status {
       display: inline-flex; align-items: center;
       padding: 3px 10px; border-radius: 12px;
@@ -257,7 +264,7 @@
       margin-top: 6px; width: fit-content;
     }
 
-    /* ── Tag colours ── */
+    /* ── Tag / banner colours ── */
     .tag-purple { background: rgba(108,99,255,.85); color:#fff; }
     .tag-teal   { background: rgba(20,184,166,.85);  color:#fff; }
     .tag-green  { background: rgba(34,197,94,.85);   color:#fff; }
@@ -265,43 +272,32 @@
     .tag-orange { background: rgba(249,115,22,.85);  color:#fff; }
     .tag-pink   { background: rgba(236,72,153,.85);  color:#fff; }
 
-    /* ── Banner colours ── */
     .banner-blue   { background: linear-gradient(135deg,#1e3a8a,#3b82f6); color:#fff; }
     .banner-teal   { background: linear-gradient(135deg,#0f5e5e,#14b8a6); color:#fff; }
     .banner-purple { background: linear-gradient(135deg,#4c1d95,#7c3aed); color:#fff; }
-    .banner-green  { background: linear-gradient(135deg,#14532d,#22c55e); color:#fff; }
     .banner-amber  { background: linear-gradient(135deg,#78350f,#f59e0b); color:#fff; }
     .banner-pink   { background: linear-gradient(135deg,#831843,#ec4899); color:#fff; }
 
-    /* ════════════════════════════════════════
+    /* ════════════════════════════════════════════
        CALENDAR PAGE
-    ════════════════════════════════════════ */
+    ════════════════════════════════════════════ */
     .cal-page-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
     }
-    .cal-page-title {
-      font-size: 22px; font-weight: 800; color: #1a1a2e;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .cal-page-title svg { color: #4a6cf7; }
 
     .cal-layout {
-      display: grid;
-      grid-template-columns: 250px 1fr;
-      gap: 20px; align-items: start;
+      display: grid; grid-template-columns: 250px 1fr; gap: 20px; align-items: start;
     }
     @media(max-width:820px){ .cal-layout{ grid-template-columns:1fr; } }
 
     /* Mini month */
     .mini-month {
-      background: #fff; border-radius: 16px;
-      border: 1.5px solid #dde3ee;
+      background: #fff; border-radius: 16px; border: 1.5px solid #dde3ee;
       padding: 18px; position: sticky; top: 84px;
     }
     .mini-month-nav {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
     }
     .mini-month-title { font-size: 14px; font-weight: 700; color: #1a1a2e; }
     .mini-nav-btn {
@@ -324,10 +320,11 @@
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; color: #334; transition: all .15s;
       position: relative; margin: auto;
+      border: none; background: transparent;
     }
     .mini-cell:hover { background: #eef1fb; color: #4a6cf7; }
     .mini-cell.today { border: 1.5px solid #4a6cf7; color: #4a6cf7; font-weight: 700; }
-    .mini-cell.selected { background: #4a6cf7 !important; color: #fff !important; font-weight: 700; }
+    .mini-cell[aria-pressed="true"] { background: #4a6cf7; color: #fff; font-weight: 700; }
     .mini-cell.other-month { color: #bcc5d8; }
     .mini-cell.weekend { color: #aab2c8; }
     .mini-cell.has-event::after {
@@ -335,13 +332,10 @@
       left: 50%; transform: translateX(-50%);
       width: 4px; height: 4px; border-radius: 50%; background: #4a6cf7;
     }
-    .mini-cell.selected.has-event::after { background: rgba(255,255,255,.8); }
+    .mini-cell[aria-pressed="true"].has-event::after { background: rgba(255,255,255,.8); }
 
-    /* Week view (right) */
-    .week-view {
-      background: #fff; border-radius: 16px;
-      border: 1.5px solid #dde3ee; overflow: hidden;
-    }
+    /* Week view */
+    .week-view { background: #fff; border-radius: 16px; border: 1.5px solid #dde3ee; overflow: hidden; }
     .week-nav {
       display: flex; align-items: center; justify-content: space-between;
       padding: 16px 20px; border-bottom: 1.5px solid #eef1f7;
@@ -357,958 +351,1175 @@
     .week-today-btn {
       padding: 7px 16px; border-radius: 16px;
       border: 1.5px solid #dde3ee; background: transparent;
-      color: #555; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all .2s;
+      color: #555; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
     }
     .week-today-btn:hover { border-color: #4a6cf7; color: #4a6cf7; }
     .week-title { font-size: 15px; font-weight: 700; color: #1a1a2e; }
     .week-num-badge {
       font-size: 11px; font-weight: 700; color: #fff;
-      background: #4a6cf7; padding: 2px 9px; border-radius: 12px;
-      margin-left: 6px;
+      background: #4a6cf7; padding: 2px 9px; border-radius: 12px; margin-left: 6px;
     }
 
-    /* Five-column day headers */
     .week-days-row {
       display: grid; grid-template-columns: repeat(5,1fr);
       border-bottom: 1.5px solid #eef1f7;
+      role: tablist;
     }
-    .week-day-header {
+    .strip-day-btn {
       padding: 12px 8px; text-align: center;
-      border-right: 1px solid #eef1f7; cursor: pointer;
-      transition: background .15s; position: relative;
+      cursor: pointer; transition: background .15s;
+      border-right: 1px solid #eef1f7;
+      background: transparent; border-top: none; border-bottom: none; border-left: none;
+      position: relative; width: 100%;
     }
-    .week-day-header:last-child { border-right: none; }
-    .week-day-header:hover { background: #f8f9ff; }
-    .week-day-header.active { background: #f0f3ff; }
-    .week-day-header.active::after {
-      content: ''; position: absolute;
-      bottom: 0; left: 0; right: 0; height: 2.5px; background: #4a6cf7;
+    .strip-day-btn:last-child { border-right: none; }
+    .strip-day-btn:hover { background: #f8f9ff; }
+    .strip-day-btn[aria-selected="true"] { background: #f0f3ff; }
+    .strip-day-btn[aria-selected="true"]::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2.5px; background: #4a6cf7;
     }
     .wdh-name { font-size: 10px; font-weight: 700; color: #8090b0; text-transform: uppercase; letter-spacing: .06em; }
     .wdh-num  { font-size: 20px; font-weight: 800; color: #1a1a2e; line-height: 1.2; margin-top: 2px; }
     .wdh-num.today {
-      background: #4a6cf7; color: #fff;
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 2px auto 0; font-size: 16px;
+      background: #4a6cf7; color: #fff; width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin: 2px auto 0; font-size: 16px;
     }
-    .wdh-dot {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: #4a6cf7; margin: 4px auto 0; opacity: 0;
-    }
+    .wdh-dot { width: 5px; height: 5px; border-radius: 50%; background: #4a6cf7; margin: 4px auto 0; opacity: 0; }
     .wdh-dot.visible { opacity: 1; }
 
-    /* Day event list */
     .day-events { padding: 20px; min-height: 240px; }
-    .day-selected-label {
-      font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .07em; color: #8090b0; margin-bottom: 14px;
-    }
-    .day-empty {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      min-height: 180px; color: #b0c0d8; gap: 10px;
-    }
-    .day-empty svg { width: 38px; height: 38px; opacity: .4; }
+    .day-selected-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #8090b0; margin-bottom: 14px; }
+    .day-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; color: #b0c0d8; gap: 10px; }
     .day-empty p { font-size: 14px; }
 
-    /* Event row */
     .ev-row {
       display: flex; align-items: stretch;
-      background: #f8f9ff; border-radius: 12px;
-      border: 1.5px solid #e8edf8;
+      background: #f8f9ff; border-radius: 12px; border: 1.5px solid #e8edf8;
       overflow: hidden; margin-bottom: 10px;
-      cursor: pointer; transition: box-shadow .2s, transform .15s;
     }
-    .ev-row:hover { box-shadow: 0 3px 16px #0001; transform: translateY(-1px); }
     .ev-stripe { width: 5px; flex-shrink: 0; }
     .ev-body { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
     .ev-title { font-size: 14px; font-weight: 700; color: #1a1a2e; }
     .ev-meta  { font-size: 12px; color: #7090b0; display: flex; flex-wrap: wrap; gap: 12px; }
-    .ev-span  {
-      font-size: 11px; font-weight: 600; color: #4a6cf7;
-      display: flex; align-items: center; gap: 4px;
+    .ev-span  { font-size: 11px; font-weight: 600; color: #4a6cf7; display: flex; align-items: center; gap: 4px; }
+    .ev-badge { display: inline-flex; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; width: fit-content; margin-top: 2px; }
+    .ev-open-btn {
+      display: flex; align-items: center; padding: 0 16px;
+      background: transparent; border: none; cursor: pointer;
     }
-    .ev-badge {
-      display: inline-flex; padding: 2px 9px; border-radius: 10px;
-      font-size: 11px; font-weight: 700; width: fit-content; margin-top: 2px;
+    .ev-open-btn span {
+      padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      border: 1.5px solid; white-space: nowrap;
+      transition: background .15s;
+    }
+    .ev-open-btn:hover span { filter: brightness(.92); }
+
+    /* ══════════════════════════════════════════════
+       MODAL
+    ══════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(8,16,30,.72);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #162236; border-radius: 20px; border: 1.5px solid #1e2e45;
+      width: 100%; max-width: 620px; max-height: 90vh; overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: 0 24px 80px #00000080;
+      transform: translateY(16px); transition: transform .2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      padding: 20px 24px 16px; border-bottom: 1.5px solid #1e2e45;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-shrink: 0;
+    }
+    .modal-header-left { display: flex; flex-direction: column; gap: 4px; }
+    .modal-pretitle { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: #4a6cf7; }
+    .modal-title-text { font-size: 18px; font-weight: 800; color: #fff; }
+    .modal-subtitle { font-size: 13px; color: #7090b0; margin-top: 2px; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #2a3d58;
+      background: transparent; color: #b0c4de; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; flex-shrink: 0; transition: all .2s;
+    }
+    .modal-close:hover { border-color: #ff5c5c; color: #ff5c5c; }
+
+    .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+    .modal-search-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: #4a6070; margin-bottom: 8px; display: block; }
+    .modal-search {
+      display: flex; align-items: center; gap: 8px;
+      background: #111d30; border: 1.5px solid #2a3d58; border-radius: 12px; padding: 10px 14px;
+    }
+    .modal-search input {
+      background: transparent; border: none; outline: none; color: #fff; font-size: 14px; flex: 1;
+      /* input gets its label from .modal-search-label via aria-labelledby */
+    }
+    .modal-search input::placeholder { color: #4a6070; }
+
+    .modal-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: #4a6070; margin-bottom: 8px; }
+
+    /* Group rows */
+    .picker-group { margin-bottom: 4px; }
+    .picker-group-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-radius: 10px; background: #1e2e45;
+      cursor: pointer; transition: background .15s; width: 100%;
+      border: none; color: inherit; text-align: left;
+    }
+    .picker-group-header:hover { background: #243650; }
+    .picker-group-left { display: flex; align-items: center; gap: 10px; }
+    .picker-group-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .picker-group-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .picker-group-count { font-size: 12px; color: #7090b0; }
+    .picker-group-right { display: flex; align-items: center; gap: 10px; }
+
+    .toggle-wrap { display: flex; align-items: center; gap: 8px; }
+    /* visually-hidden toggle label (for sighted: shown; for screen reader: full label set on input) */
+    .toggle-visual-label { font-size: 12px; font-weight: 600; color: #7090b0; white-space: nowrap; }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative; display: inline-flex;
+      align-items: center; width: 40px; height: 22px; flex-shrink: 0;
+    }
+    .toggle input {
+      opacity: 0; width: 100%; height: 100%;
+      position: absolute; margin: 0; cursor: pointer; z-index: 1;
+    }
+    .toggle-slider {
+      position: absolute; inset: 0; border-radius: 11px;
+      background: #2a3d58; transition: background .2s; pointer-events: none;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; left: 3px; top: 3px; transition: transform .2s;
+      box-shadow: 0 1px 4px #0004;
+    }
+    .toggle input:checked + .toggle-slider { background: #4a6cf7; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+    .toggle input:focus-visible + .toggle-slider { outline: 3px solid #4a6cf7; outline-offset: 2px; border-radius: 11px; }
+
+    .group-chevron { color: #4a6070; transition: transform .2s; flex-shrink: 0; }
+    .group-chevron.open { transform: rotate(180deg); }
+
+    .student-list { display: none; padding: 4px 0 4px 12px; }
+    .student-list.open { display: flex; flex-direction: column; gap: 2px; }
+    .student-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-radius: 8px; transition: background .15s;
+    }
+    .student-row:hover { background: #1e2e45; }
+    .student-left { display: flex; align-items: center; gap: 10px; }
+    .student-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .student-name { font-size: 13px; font-weight: 600; color: #c0d4ea; }
+
+    .modal-footer {
+      padding: 14px 24px; border-top: 1.5px solid #1e2e45;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0;
+    }
+    .modal-footer-info { font-size: 12px; color: #7090b0; }
+    .modal-footer-info strong { color: #4a6cf7; font-weight: 700; }
+    .modal-footer-btns { display: flex; gap: 10px; }
+    .btn-cancel {
+      padding: 9px 20px; border-radius: 10px; border: 1.5px solid #2a3d58;
+      background: transparent; color: #b0c4de; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
+    }
+    .btn-cancel:hover { border-color: #4a6cf7; color: #fff; }
+    .btn-confirm {
+      padding: 9px 22px; border-radius: 10px; border: none;
+      background: #4a6cf7; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s;
+    }
+    .btn-confirm:hover { background: #3a5ce7; }
+
+    /* sr-only utility */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
   </style>
 </head>
 <body>
 
-<!-- ══ TOP NAV ══ -->
-<nav class="top-nav">
-  <span class="nav-logo" onclick="switchPage('personal')">ELEVKANALEN</span>
+<a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
 
-  <div class="nav-right">
-    <!-- Elevforsider dropdown -->
-    <div class="ef-dropdown-wrap" id="ef-dropdown-wrap">
-      <button class="ef-dropdown-btn" id="ef-dropdown-btn" onclick="toggleDropdown()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" width="16" height="16">
+<!-- ══ TOP NAV ══ -->
+<header>
+  <nav class="top-nav" aria-label="Hovednavigasjon">
+    <a href="#" class="nav-logo" aria-label="Elevkanalen – gå til startsiden">ELEVKANALEN</a>
+
+    <div class="nav-right">
+
+      <!-- Elevforsider dropdown — ARIA menu button pattern -->
+      <div class="ef-dropdown-wrap" id="ef-dropdown-wrap">
+        <button
+          class="ef-dropdown-btn"
+          id="ef-menu-btn"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="ef-menu"
+          onclick="toggleDropdown()"
+        >
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+          Elevforsider
+          <svg aria-hidden="true" focusable="false" class="chevron"
+               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <!-- role="menu" with keyboard-navigable role="menuitem" buttons -->
+        <ul
+          class="ef-dropdown-menu"
+          id="ef-menu"
+          role="menu"
+          aria-labelledby="ef-menu-btn"
+          aria-hidden="true"
+        >
+          <li role="none">
+            <span class="ef-dropdown-group-label" role="presentation">Mine forsider</span>
+          </li>
+          <li role="none">
+            <button class="ef-menu-item" role="menuitem" id="dd-personal"
+                    aria-current="page" onclick="switchPage('personal')">
+              <span class="item-dot" style="background:#4a6cf7" aria-hidden="true"></span>
+              Personlig forside
+            </button>
+          </li>
+
+          <li role="none"><div class="ef-dropdown-divider" aria-hidden="true"></div></li>
+
+          <li role="none">
+            <span class="ef-dropdown-group-label" role="presentation">Samlinger</span>
+          </li>
+          <li role="none">
+            <button class="ef-menu-item" role="menuitem" id="dd-norgeshistorie"
+                    onclick="switchPage('norgeshistorie')">
+              <span class="item-dot" style="background:#3b82f6" aria-hidden="true"></span>
+              Norgeshistorie
+            </button>
+          </li>
+          <li role="none">
+            <button class="ef-menu-item" role="menuitem" id="dd-geografi"
+                    onclick="switchPage('geografi')">
+              <span class="item-dot" style="background:#7c3aed" aria-hidden="true"></span>
+              Geografi
+            </button>
+          </li>
+          <li role="none">
+            <button class="ef-menu-item" role="menuitem" id="dd-naturfag"
+                    onclick="switchPage('naturfag')">
+              <span class="item-dot" style="background:#14b8a6" aria-hidden="true"></span>
+              Naturfag
+            </button>
+          </li>
+          <li role="none">
+            <button class="ef-menu-item" role="menuitem" id="dd-norsk"
+                    onclick="switchPage('norsk')">
+              <span class="item-dot" style="background:#ec4899" aria-hidden="true"></span>
+              Norsk litteratur
+            </button>
+          </li>
+          <li role="none">
+            <button class="ef-menu-item" role="menuitem" id="dd-matematikk"
+                    onclick="switchPage('matematikk')">
+              <span class="item-dot" style="background:#f59e0b" aria-hidden="true"></span>
+              Matematikk
+            </button>
+          </li>
+
+          <li role="none"><div class="ef-dropdown-divider" aria-hidden="true"></div></li>
+
+          <li role="none">
+            <button class="ef-dropdown-cal-link" role="menuitem" id="dd-calendar"
+                    onclick="switchPage('calendar')">
+              <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <div class="cal-link-text">
+                <span>Ukekalender – Samlinger</span>
+                <span class="cal-link-sub">Se alle aktive elevforsider per dag</span>
+              </div>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Search -->
+      <button class="icon-btn" aria-label="Søk">
+        <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
         </svg>
-        Elevforsider
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" class="ef-chevron">
+      </button>
+
+      <!-- Notifications -->
+      <button class="icon-btn" aria-label="Varsler (3 uleste)">
+        <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <span class="notif-badge" aria-hidden="true">3</span>
+      </button>
+
+      <!-- User menu -->
+      <button class="user-btn" aria-label="Brukermeny for Oliwia Walensa" aria-haspopup="true" aria-expanded="false">
+        <div class="user-avatar" aria-hidden="true">OW</div>
+        <span class="user-name">Oliwia Walensa</span>
+        <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
         </svg>
       </button>
+    </div>
+  </nav>
+</header>
 
-      <div class="ef-dropdown-menu" id="ef-dropdown-menu">
-        <!-- Mine forsider -->
-        <div class="ef-dropdown-label">Mine forsider</div>
-        <button class="ef-dropdown-item active" id="dd-personal" onclick="switchPage('personal')">
-          <span class="item-dot" style="background:#4a6cf7"></span>
+<!-- ══ MAIN ══ -->
+<main id="main-content">
+  <div class="page">
+
+    <!-- ════ PERSONLIG FORSIDE ════ -->
+    <div class="page-panel active" id="page-personal">
+      <section aria-labelledby="heading-mitt-innhold">
+        <div class="section-heading">
+          <h1 class="section-heading-pill" id="heading-mitt-innhold">Mitt innhold</h1>
+        </div>
+
+        <ul class="card-grid" aria-label="Innholdselementer">
+          <li>
+            <article class="content-card">
+              <div class="card-thumb" style="background:linear-gradient(160deg,#4ade80,#166534)" aria-hidden="true">
+                <div class="card-thumb-ph">🌱</div>
+                <span class="card-tag tag-purple">KRLE 5-7</span>
+              </div>
+              <div class="card-body">
+                <h2 class="card-title">Moses - gutten i kurven (1) - Lettlest</h2>
+                <p class="card-author">Delt av Daniel Bajer</p>
+                <button class="card-type-btn btn-ebook"
+                        aria-label="Les e-boken Moses - gutten i kurven (1) - Lettlest">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                  </svg>
+                  E-bok
+                </button>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="content-card">
+              <div class="card-thumb" style="background:linear-gradient(160deg,#1d4ed8,#60a5fa)" aria-hidden="true">
+                <div class="card-thumb-ph">🎨</div>
+                <span class="card-tag tag-teal">Samenes nasjonaldag 3-4</span>
+              </div>
+              <div class="card-body">
+                <h2 class="card-title">Samenes nasjonaldag</h2>
+                <p class="card-author">Delt av Daniel Bajer</p>
+                <button class="card-type-btn btn-undervis"
+                        aria-label="Åpne undervisningsopplegg: Samenes nasjonaldag">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                  </svg>
+                  Undervisningsopplegg
+                </button>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="content-card">
+              <div class="card-thumb" style="background:linear-gradient(160deg,#b45309,#fcd34d)" aria-hidden="true">
+                <div class="card-thumb-ph">🎳</div>
+                <span class="card-tag tag-purple">KRLE 5-7</span>
+              </div>
+              <div class="card-body">
+                <h2 class="card-title">Fredag den 13.</h2>
+                <p class="card-desc">Er det flere ulykker denne dagen?</p>
+                <p class="card-author">Delt av Daniel Bajer</p>
+                <button class="card-type-btn btn-undervis"
+                        aria-label="Åpne undervisningsopplegg: Fredag den 13.">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                  </svg>
+                  Undervisningsopplegg
+                </button>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="content-card">
+              <div class="card-thumb" style="background:linear-gradient(160deg,#1a1a2e,#3a1a1a)" aria-hidden="true">
+                <div class="card-thumb-ph">🛡️</div>
+                <span class="card-tag tag-green">Brannvernforeningen</span>
+              </div>
+              <div class="card-body">
+                <h2 class="card-title">Forebygging</h2>
+                <p class="card-author">Delt av Daniel Bajer</p>
+                <button class="card-type-btn btn-undervis"
+                        aria-label="Åpne undervisningsopplegg: Forebygging">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                  </svg>
+                  Undervisningsopplegg
+                </button>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="content-card">
+              <div class="card-thumb" style="background:#e2e8f0" aria-hidden="true">
+                <div class="card-thumb-ph">📄</div>
+              </div>
+              <div class="card-body">
+                <h2 class="card-title">null</h2>
+                <p class="card-author">Delt av Daniel Bajer</p>
+                <button class="card-type-btn btn-video" aria-label="Se video: null">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  Video
+                </button>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="content-card">
+              <div class="card-thumb" style="background:linear-gradient(160deg,#1c1917,#57534e)" aria-hidden="true">
+                <div class="card-thumb-ph">⚔️</div>
+                <span class="card-tag tag-teal">Samfunnsfag 5-7</span>
+              </div>
+              <div class="card-body">
+                <h2 class="card-title">Vikingene</h2>
+                <p class="card-desc">Lær om livet i vikingtiden, norrøn mytologi og kjente vikinger!</p>
+                <p class="card-author">Delt av Daniel Bajer</p>
+                <button class="card-type-btn btn-undervis"
+                        aria-label="Åpne undervisningsopplegg: Vikingene">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                  </svg>
+                  Undervisningsopplegg
+                </button>
+              </div>
+            </article>
+          </li>
+        </ul>
+
+        <h2 class="subsection-heading" id="heading-oppgaver">Oppgaver</h2>
+        <ul class="card-grid" aria-labelledby="heading-oppgaver" id="oppgaver-grid"></ul>
+      </section>
+    </div>
+
+    <!-- ════ NORGESHISTORIE ════ -->
+    <div class="page-panel" id="page-norgeshistorie">
+      <div class="page-banner banner-blue" role="region" aria-label="Samling: Norgeshistorie – informasjon">
+        <div class="page-banner-left">
+          <p class="page-banner-eyebrow" aria-hidden="true">Samling</p>
+          <h1 class="page-banner-title">Norgeshistorie</h1>
+          <p class="page-banner-sub">Gruppe 8B · Aktiv · 11–15. mai 2026</p>
+        </div>
+        <button class="home-back-btn" onclick="switchPage('personal')"
+                aria-label="Gå tilbake til Personlig forside">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
+          </svg>
           Personlig forside
         </button>
+      </div>
+      <ul class="card-grid" aria-label="Innhold i Norgeshistorie">
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#1e3a8a,#60a5fa)" aria-hidden="true"><div class="card-thumb-ph">🏔️</div><span class="card-tag tag-blue">Historie 5-7</span></div><div class="card-body"><h2 class="card-title">Norge gjennom tidene</h2><p class="card-desc">Fra vikingtiden til moderne stat.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Norge gjennom tidene">◈ Undervisningsopplegg</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#1c1917,#57534e)" aria-hidden="true"><div class="card-thumb-ph">⚔️</div><span class="card-tag tag-teal">Samfunnsfag 5-7</span></div><div class="card-body"><h2 class="card-title">Vikingene</h2><p class="card-desc">Norrøn mytologi og kjente vikinger.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Vikingene">◈ Undervisningsopplegg</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#134e4a,#2dd4bf)" aria-hidden="true"><div class="card-thumb-ph">🏛️</div><span class="card-tag tag-blue">Historie 7-10</span></div><div class="card-body"><h2 class="card-title">Mellomkrigstiden</h2><p class="card-desc">Europa mellom de to verdenskrigene.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-video" aria-label="Se video: Mellomkrigstiden">▶ Video</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#1e3a8a,#7dd3fc)" aria-hidden="true"><div class="card-thumb-ph">🗳️</div><span class="card-tag tag-blue">Samfunnsfag 8-10</span></div><div class="card-body"><h2 class="card-title">Demokratiets fremvekst</h2><p class="card-desc">Fra enevelde til folkestyre.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-ebook" aria-label="Les e-boken: Demokratiets fremvekst">📖 E-bok</button></div></article></li>
+      </ul>
+    </div>
 
-        <div class="ef-dropdown-divider"></div>
+    <!-- ════ GEOGRAFI ════ -->
+    <div class="page-panel" id="page-geografi">
+      <div class="page-banner banner-purple" role="region" aria-label="Samling: Geografi – informasjon">
+        <div class="page-banner-left">
+          <p class="page-banner-eyebrow" aria-hidden="true">Samling</p>
+          <h1 class="page-banner-title">Geografi</h1>
+          <p class="page-banner-sub">Gruppe 9A · Utkast · 12–22. mai 2026</p>
+        </div>
+        <button class="home-back-btn" onclick="switchPage('personal')" aria-label="Gå tilbake til Personlig forside">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+          Personlig forside
+        </button>
+      </div>
+      <ul class="card-grid" aria-label="Innhold i Geografi">
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#312e81,#818cf8)" aria-hidden="true"><div class="card-thumb-ph">🌍</div><span class="card-tag tag-purple">Geografi 5-7</span></div><div class="card-body"><h2 class="card-title">Verdens landformer</h2><p class="card-desc">Fjell, sletter, ørken og kystlinjer.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Verdens landformer">◈ Undervisningsopplegg</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#4c1d95,#c4b5fd)" aria-hidden="true"><div class="card-thumb-ph">🗺️</div><span class="card-tag tag-purple">Geografi 7-10</span></div><div class="card-body"><h2 class="card-title">Kartlesing og koordinater</h2><p class="card-desc">Lær å lese kart og bruke koordinater.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-video" aria-label="Se video: Kartlesing og koordinater">▶ Video</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#1e1b4b,#6366f1)" aria-hidden="true"><div class="card-thumb-ph">🌊</div><span class="card-tag tag-blue">Naturfag 5-7</span></div><div class="card-body"><h2 class="card-title">Hav og klimasoner</h2><p class="card-desc">Verdenshavene og klimaets påvirkning.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-ebook" aria-label="Les e-boken: Hav og klimasoner">📖 E-bok</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#5b21b6,#a78bfa)" aria-hidden="true"><div class="card-thumb-ph">🏔️</div><span class="card-tag tag-purple">Geografi 8-10</span></div><div class="card-body"><h2 class="card-title">Norges geografi</h2><p class="card-desc">Fjorder, fjell og norsk natur.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Norges geografi">◈ Undervisningsopplegg</button></div></article></li>
+      </ul>
+    </div>
 
-        <!-- Samlinger -->
-        <div class="ef-dropdown-label">Samlinger</div>
-        <button class="ef-dropdown-item" id="dd-norgeshistorie" onclick="switchPage('norgeshistorie')">
-          <span class="item-dot" style="background:#3b82f6"></span>
-          Norgeshistorie
+    <!-- ════ NATURFAG ════ -->
+    <div class="page-panel" id="page-naturfag">
+      <div class="page-banner banner-teal" role="region" aria-label="Samling: Naturfag – informasjon">
+        <div class="page-banner-left">
+          <p class="page-banner-eyebrow" aria-hidden="true">Samling</p>
+          <h1 class="page-banner-title">Naturfag</h1>
+          <p class="page-banner-sub">Gruppe 7C · Aktiv · 13–16. mai 2026</p>
+        </div>
+        <button class="home-back-btn" onclick="switchPage('personal')" aria-label="Gå tilbake til Personlig forside">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+          Personlig forside
         </button>
-        <button class="ef-dropdown-item" id="dd-geografi" onclick="switchPage('geografi')">
-          <span class="item-dot" style="background:#7c3aed"></span>
-          Geografi
-        </button>
-        <button class="ef-dropdown-item" id="dd-naturfag" onclick="switchPage('naturfag')">
-          <span class="item-dot" style="background:#14b8a6"></span>
-          Naturfag
-        </button>
-        <button class="ef-dropdown-item" id="dd-norsk" onclick="switchPage('norsk')">
-          <span class="item-dot" style="background:#ec4899"></span>
-          Norsk litteratur
-        </button>
-        <button class="ef-dropdown-item" id="dd-matematikk" onclick="switchPage('matematikk')">
-          <span class="item-dot" style="background:#f59e0b"></span>
-          Matematikk
-        </button>
+      </div>
+      <ul class="card-grid" aria-label="Innhold i Naturfag">
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#064e3b,#34d399)" aria-hidden="true"><div class="card-thumb-ph">🔬</div><span class="card-tag tag-teal">Naturfag 5-7</span></div><div class="card-body"><h2 class="card-title">Celler og fotosyntese</h2><p class="card-desc">Plantenes energikretsløp.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Celler og fotosyntese">◈ Undervisningsopplegg</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#065f46,#6ee7b7)" aria-hidden="true"><div class="card-thumb-ph">⚗️</div><span class="card-tag tag-teal">Kjemi 7-10</span></div><div class="card-body"><h2 class="card-title">Grunnstoff og molekyler</h2><p class="card-desc">Periodesystemet og kjemiske bindinger.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-video" aria-label="Se video: Grunnstoff og molekyler">▶ Video</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#134e4a,#5eead4)" aria-hidden="true"><div class="card-thumb-ph">🌱</div><span class="card-tag tag-green">Biologi 5-7</span></div><div class="card-body"><h2 class="card-title">Allergi og immunforsvaret</h2><p class="card-desc">Hvordan kroppen reagerer på fremmedstoffer.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-ebook" aria-label="Les e-boken: Allergi og immunforsvaret">📖 E-bok</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#052e16,#4ade80)" aria-hidden="true"><div class="card-thumb-ph">🌍</div><span class="card-tag tag-teal">Naturfag 8-10</span></div><div class="card-body"><h2 class="card-title">Bærekraft og miljø</h2><p class="card-desc">Klimaendringer og menneskelig påvirkning.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Bærekraft og miljø">◈ Undervisningsopplegg</button></div></article></li>
+      </ul>
+    </div>
 
-        <div class="ef-dropdown-divider"></div>
+    <!-- ════ NORSK LITTERATUR ════ -->
+    <div class="page-panel" id="page-norsk">
+      <div class="page-banner banner-pink" role="region" aria-label="Samling: Norsk litteratur – informasjon">
+        <div class="page-banner-left">
+          <p class="page-banner-eyebrow" aria-hidden="true">Samling</p>
+          <h1 class="page-banner-title">Norsk litteratur</h1>
+          <p class="page-banner-sub">Gruppe 8A · Delt · 15–29. mai 2026</p>
+        </div>
+        <button class="home-back-btn" onclick="switchPage('personal')" aria-label="Gå tilbake til Personlig forside">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+          Personlig forside
+        </button>
+      </div>
+      <ul class="card-grid" aria-label="Innhold i Norsk litteratur">
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#831843,#f9a8d4)" aria-hidden="true"><div class="card-thumb-ph">📚</div><span class="card-tag tag-pink">Norsk 5-7</span></div><div class="card-body"><h2 class="card-title">Ibsen – Et dukkehjem</h2><p class="card-desc">Analyse og samtale om Nora Helmer.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-ebook" aria-label="Les e-boken: Ibsen – Et dukkehjem">📖 E-bok</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#500724,#fda4af)" aria-hidden="true"><div class="card-thumb-ph">✍️</div><span class="card-tag tag-pink">Norsk 7-10</span></div><div class="card-body"><h2 class="card-title">Hamsun og modernismen</h2><p class="card-desc">Sult og den moderne romanen.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Hamsun og modernismen">◈ Undervisningsopplegg</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#4a044e,#e879f9)" aria-hidden="true"><div class="card-thumb-ph">📖</div><span class="card-tag tag-purple">Norsk 8-10</span></div><div class="card-body"><h2 class="card-title">Snorre og sagaene</h2><p class="card-desc">Norrøn litteratur og historieskriving.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-video" aria-label="Se video: Snorre og sagaene">▶ Video</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#701a75,#f0abfc)" aria-hidden="true"><div class="card-thumb-ph">🖊️</div><span class="card-tag tag-pink">Norsk 5-7</span></div><div class="card-body"><h2 class="card-title">Lyrikk og dikt</h2><p class="card-desc">Fra Wergeland til Nils-Aslak Valkeapää.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-ebook" aria-label="Les e-boken: Lyrikk og dikt">📖 E-bok</button></div></article></li>
+      </ul>
+    </div>
 
-        <!-- Calendar link -->
-        <button class="ef-dropdown-cal-link" id="dd-calendar" onclick="switchPage('calendar')">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    <!-- ════ MATEMATIKK ════ -->
+    <div class="page-panel" id="page-matematikk">
+      <div class="page-banner banner-amber" role="region" aria-label="Samling: Matematikk – informasjon">
+        <div class="page-banner-left">
+          <p class="page-banner-eyebrow" aria-hidden="true">Samling</p>
+          <h1 class="page-banner-title">Matematikk</h1>
+          <p class="page-banner-sub">Gruppe 9B · Utkast · 19–22. mai 2026</p>
+        </div>
+        <button class="home-back-btn" onclick="switchPage('personal')" aria-label="Gå tilbake til Personlig forside">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+          Personlig forside
+        </button>
+      </div>
+      <ul class="card-grid" aria-label="Innhold i Matematikk">
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#78350f,#fcd34d)" aria-hidden="true"><div class="card-thumb-ph">📐</div><span class="card-tag tag-orange">Matte 5-7</span></div><div class="card-body"><h2 class="card-title">Algebra og likninger</h2><p class="card-desc">Løsning av lineære og kvadratiske likninger.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Algebra og likninger">◈ Undervisningsopplegg</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#92400e,#fde68a)" aria-hidden="true"><div class="card-thumb-ph">📏</div><span class="card-tag tag-orange">Matte 7-10</span></div><div class="card-body"><h2 class="card-title">Geometri og areal</h2><p class="card-desc">Beregning av flater og volum.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-video" aria-label="Se video: Geometri og areal">▶ Video</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#451a03,#fb923c)" aria-hidden="true"><div class="card-thumb-ph">📊</div><span class="card-tag tag-orange">Matte 8-10</span></div><div class="card-body"><h2 class="card-title">Statistikk og sannsynlighet</h2><p class="card-desc">Gjennomsnitt, median og sannsynlighetsregning.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-ebook" aria-label="Les e-boken: Statistikk og sannsynlighet">📖 E-bok</button></div></article></li>
+        <li><article class="content-card"><div class="card-thumb" style="background:linear-gradient(160deg,#7c2d12,#fdba74)" aria-hidden="true"><div class="card-thumb-ph">🔢</div><span class="card-tag tag-orange">Matte 5-7</span></div><div class="card-body"><h2 class="card-title">Brøk og desimaltall</h2><p class="card-desc">Regning med brøk, prosent og desimaler.</p><p class="card-author">Delt av Daniel Bajer</p><button class="card-type-btn btn-undervis" aria-label="Åpne undervisningsopplegg: Brøk og desimaltall">◈ Undervisningsopplegg</button></div></article></li>
+      </ul>
+    </div>
+
+    <!-- ════ CALENDAR ════ -->
+    <div class="page-panel" id="page-calendar">
+      <div class="cal-page-header">
+        <h1 id="cal-page-heading" style="font-size:22px;font-weight:800;color:#1a1a2e;display:flex;align-items:center;gap:10px;">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#4a6cf7" width="24" height="24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-          <div>
-            <div>Ukekalender – Samlinger</div>
-            <div class="cal-link-sub">Se alle aktive elevforsider per dag</div>
-          </div>
+          Ukekalender – Samlinger
+        </h1>
+        <button class="home-back-btn"
+                style="background:#4a6cf7;color:#fff;border-color:#4a6cf7;"
+                onclick="switchPage('personal')"
+                aria-label="Gå tilbake til Personlig forside">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
+          </svg>
+          Personlig forside
         </button>
       </div>
-    </div>
 
-    <!-- Search -->
-    <button class="icon-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke="currentColor" width="18" height="18">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
-      </svg>
-    </button>
-
-    <!-- Notifications -->
-    <button class="icon-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke="currentColor" width="18" height="18">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-      </svg>
-      <span class="notif-badge">3</span>
-    </button>
-
-    <!-- User -->
-    <button class="user-btn">
-      <div class="user-avatar">OW</div>
-      <span class="user-name">Oliwia Walensa</span>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke="currentColor" width="13" height="13">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </button>
-  </div>
-</nav>
-
-<!-- ═══════════════════════════════════════════════════
-     PAGE PANELS
-═══════════════════════════════════════════════════ -->
-<div class="page">
-
-  <!-- ════════════════════════════
-       PERSONLIG FORSIDE
-  ════════════════════════════ -->
-  <div class="page-panel active" id="page-personal">
-    <div class="section-heading">
-      <span class="section-heading-pill">Mitt innhold</span>
-    </div>
-
-    <div class="card-grid">
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#4ade80,#166534)">
-          <div class="card-thumb-ph">🌱</div>
-          <span class="card-tag tag-purple">KRLE 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Moses - gutten i kurven (1) - Lettlest</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1d4ed8,#60a5fa)">
-          <div class="card-thumb-ph">🎨</div>
-          <span class="card-tag tag-teal">Samenes nasjonaldag 3-4</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Samenes nasjonaldag</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#b45309,#fcd34d)">
-          <div class="card-thumb-ph">🎳</div>
-          <span class="card-tag tag-purple">KRLE 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Fredag den 13.</div>
-          <div class="card-desc">Er det flere ulykker denne dagen?</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1a1a2e,#3a1a1a)">
-          <div class="card-thumb-ph">🛡️</div>
-          <span class="card-tag tag-green">Brannvernforeningen</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Forebygging</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:#e2e8f0">
-          <div class="card-thumb-ph">📄</div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">null</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-video">▶ Video</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1c1917,#57534e)">
-          <div class="card-thumb-ph">⚔️</div>
-          <span class="card-tag tag-teal">Samfunnsfag 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Vikingene</div>
-          <div class="card-desc">Lær om livet i vikingtiden, norrøn mytologi og kjente vikinger!</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="subsection-heading">Oppgaver</div>
-    <div class="card-grid">
-      <div class="oppgave-card">
-        <div class="card-thumb" style="background:linear-gradient(135deg,#b8d4f0,#4a90d9);padding-top:46%">
-          <div class="card-thumb-ph">🗺️</div>
-          <span class="card-tag tag-blue">Historie</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Mellomkrigstiden</div>
-          <div class="oppgave-meta">✏️ 18 oppgaver</div>
-          <span class="oppgave-status" style="background:#dbeafe;color:#1d4ed8">Utkast</span>
-        </div>
-      </div>
-      <div class="oppgave-card">
-        <div class="card-thumb" style="background:linear-gradient(135deg,#c8e6c9,#388e3c);padding-top:46%">
-          <div class="card-thumb-ph">🌳</div>
-          <span class="card-tag tag-green">Etikk</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Dydsetikk</div>
-          <div class="oppgave-meta">✏️ 4 oppgaver</div>
-          <span class="oppgave-status" style="background:#dbeafe;color:#1d4ed8">Utkast</span>
-        </div>
-      </div>
-      <div class="oppgave-card">
-        <div class="card-thumb" style="background:linear-gradient(135deg,#c0e0f8,#1565c0);padding-top:46%">
-          <div class="card-thumb-ph">⛵</div>
-          <span class="card-tag tag-teal">Historie</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Vikingene (1)</div>
-          <div class="oppgave-meta">✏️ 32 oppgaver</div>
-          <span class="oppgave-status" style="background:#dbeafe;color:#1d4ed8">Utkast</span>
-        </div>
-      </div>
-      <div class="oppgave-card">
-        <div class="card-thumb" style="background:linear-gradient(135deg,#d4edda,#2e7d32);padding-top:46%">
-          <div class="card-thumb-ph">🌿</div>
-          <span class="card-tag tag-green">Helse</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Allergi</div>
-          <div class="oppgave-meta">✏️ 20 oppgaver</div>
-          <span class="oppgave-status" style="background:#d1fae5;color:#065f46">Aktiv</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════
-       NORGESHISTORIE
-  ════════════════════════════ -->
-  <div class="page-panel" id="page-norgeshistorie">
-    <div class="page-banner banner-blue">
-      <div class="page-banner-left">
-        <div class="page-banner-label">Samling</div>
-        <div class="page-banner-title">Norgeshistorie</div>
-        <div class="page-banner-sub">Gruppe 8B · Aktiv · 11–15. mai 2026</div>
-      </div>
-      <button class="home-back-btn" onclick="switchPage('personal')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-        </svg>
-        Personlig forside
-      </button>
-    </div>
-    <div class="card-grid">
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1e3a8a,#60a5fa)">
-          <div class="card-thumb-ph">🏔️</div><span class="card-tag tag-blue">Historie 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Norge gjennom tidene</div>
-          <div class="card-desc">Fra vikingtiden til moderne stat.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1c1917,#57534e)">
-          <div class="card-thumb-ph">⚔️</div><span class="card-tag tag-teal">Samfunnsfag 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Vikingene</div>
-          <div class="card-desc">Norrøn mytologi og kjente vikinger.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#134e4a,#2dd4bf)">
-          <div class="card-thumb-ph">🏛️</div><span class="card-tag tag-blue">Historie 7-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Mellomkrigstiden</div>
-          <div class="card-desc">Europa mellom de to verdenskrigene.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-video">▶ Video</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1e3a8a,#7dd3fc)">
-          <div class="card-thumb-ph">🗳️</div><span class="card-tag tag-blue">Samfunnsfag 8-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Demokratiets fremvekst</div>
-          <div class="card-desc">Fra enevelde til folkestyre.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════
-       GEOGRAFI
-  ════════════════════════════ -->
-  <div class="page-panel" id="page-geografi">
-    <div class="page-banner banner-purple">
-      <div class="page-banner-left">
-        <div class="page-banner-label">Samling</div>
-        <div class="page-banner-title">Geografi</div>
-        <div class="page-banner-sub">Gruppe 9A · Utkast · 12–22. mai 2026</div>
-      </div>
-      <button class="home-back-btn" onclick="switchPage('personal')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-        </svg>
-        Personlig forside
-      </button>
-    </div>
-    <div class="card-grid">
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#312e81,#818cf8)">
-          <div class="card-thumb-ph">🌍</div><span class="card-tag tag-purple">Geografi 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Verdens landformer</div>
-          <div class="card-desc">Fjell, sletter, ørken og kystlinjer.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#4c1d95,#c4b5fd)">
-          <div class="card-thumb-ph">🗺️</div><span class="card-tag tag-purple">Geografi 7-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Kartlesing og koordinater</div>
-          <div class="card-desc">Lær å lese kart og bruke koordinater.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-video">▶ Video</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#1e1b4b,#6366f1)">
-          <div class="card-thumb-ph">🌊</div><span class="card-tag tag-blue">Naturfag 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Hav og klimasoner</div>
-          <div class="card-desc">Verdenshavene og klimaets påvirkning.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#5b21b6,#a78bfa)">
-          <div class="card-thumb-ph">🏔️</div><span class="card-tag tag-purple">Geografi 8-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Norges geografi</div>
-          <div class="card-desc">Fjorder, fjell og norsk natur.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════
-       NATURFAG
-  ════════════════════════════ -->
-  <div class="page-panel" id="page-naturfag">
-    <div class="page-banner banner-teal">
-      <div class="page-banner-left">
-        <div class="page-banner-label">Samling</div>
-        <div class="page-banner-title">Naturfag</div>
-        <div class="page-banner-sub">Gruppe 7C · Aktiv · 13–16. mai 2026</div>
-      </div>
-      <button class="home-back-btn" onclick="switchPage('personal')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-        </svg>
-        Personlig forside
-      </button>
-    </div>
-    <div class="card-grid">
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#064e3b,#34d399)">
-          <div class="card-thumb-ph">🔬</div><span class="card-tag tag-teal">Naturfag 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Celler og fotosyntese</div>
-          <div class="card-desc">Plantenes energikretsløp.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#065f46,#6ee7b7)">
-          <div class="card-thumb-ph">⚗️</div><span class="card-tag tag-teal">Kjemi 7-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Grunnstoff og molekyler</div>
-          <div class="card-desc">Periodesystemet og kjemiske bindinger.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-video">▶ Video</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#134e4a,#5eead4)">
-          <div class="card-thumb-ph">🌱</div><span class="card-tag tag-green">Biologi 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Allergi og immunforsvaret</div>
-          <div class="card-desc">Hvordan kroppen reagerer på fremmedstoffer.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#052e16,#4ade80)">
-          <div class="card-thumb-ph">🌍</div><span class="card-tag tag-teal">Naturfag 8-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Bærekraft og miljø</div>
-          <div class="card-desc">Klimaendringer og menneskelig påvirkning.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════
-       NORSK LITTERATUR
-  ════════════════════════════ -->
-  <div class="page-panel" id="page-norsk">
-    <div class="page-banner banner-pink">
-      <div class="page-banner-left">
-        <div class="page-banner-label">Samling</div>
-        <div class="page-banner-title">Norsk litteratur</div>
-        <div class="page-banner-sub">Gruppe 8A · Delt · 15–29. mai 2026</div>
-      </div>
-      <button class="home-back-btn" onclick="switchPage('personal')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-        </svg>
-        Personlig forside
-      </button>
-    </div>
-    <div class="card-grid">
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#831843,#f9a8d4)">
-          <div class="card-thumb-ph">📚</div><span class="card-tag tag-pink">Norsk 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Ibsen – Et dukkehjem</div>
-          <div class="card-desc">Analyse og samtale om Nora Helmer.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#500724,#fda4af)">
-          <div class="card-thumb-ph">✍️</div><span class="card-tag tag-pink">Norsk 7-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Hamsun og modernismen</div>
-          <div class="card-desc">Sult og den moderne romanen.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#4a044e,#e879f9)">
-          <div class="card-thumb-ph">📖</div><span class="card-tag tag-purple">Norsk 8-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Snorre og sagaene</div>
-          <div class="card-desc">Norrøn litteratur og historieskriving.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-video">▶ Video</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#701a75,#f0abfc)">
-          <div class="card-thumb-ph">🖊️</div><span class="card-tag tag-pink">Norsk 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Lyrikk og dikt</div>
-          <div class="card-desc">Fra Wergeland til Nils-Aslak Valkeapää.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════
-       MATEMATIKK
-  ════════════════════════════ -->
-  <div class="page-panel" id="page-matematikk">
-    <div class="page-banner banner-amber">
-      <div class="page-banner-left">
-        <div class="page-banner-label">Samling</div>
-        <div class="page-banner-title">Matematikk</div>
-        <div class="page-banner-sub">Gruppe 9B · Utkast · 19–22. mai 2026</div>
-      </div>
-      <button class="home-back-btn" onclick="switchPage('personal')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-        </svg>
-        Personlig forside
-      </button>
-    </div>
-    <div class="card-grid">
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#78350f,#fcd34d)">
-          <div class="card-thumb-ph">📐</div><span class="card-tag tag-orange">Matte 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Algebra og likninger</div>
-          <div class="card-desc">Løsning av lineære og kvadratiske likninger.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#92400e,#fde68a)">
-          <div class="card-thumb-ph">📏</div><span class="card-tag tag-orange">Matte 7-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Geometri og areal</div>
-          <div class="card-desc">Beregning av flater og volum.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-video">▶ Video</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#451a03,#fb923c)">
-          <div class="card-thumb-ph">📊</div><span class="card-tag tag-orange">Matte 8-10</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Statistikk og sannsynlighet</div>
-          <div class="card-desc">Gjennomsnitt, median og sannsynlighetsregning.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-ebook">📖 E-bok</button>
-        </div>
-      </div>
-      <div class="content-card">
-        <div class="card-thumb" style="background:linear-gradient(160deg,#7c2d12,#fdba74)">
-          <div class="card-thumb-ph">🔢</div><span class="card-tag tag-orange">Matte 5-7</span>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Brøk og desimaltall</div>
-          <div class="card-desc">Regning med brøk, prosent og desimaler.</div>
-          <div class="card-author">Delt av Daniel Bajer</div>
-          <button class="card-type-btn btn-undervis">◈ Undervisningsopplegg</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════
-       CALENDAR PAGE
-  ════════════════════════════ -->
-  <div class="page-panel" id="page-calendar">
-    <div class="cal-page-header">
-      <div class="cal-page-title">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" width="24" height="24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        Ukekalender – Samlinger
-      </div>
-      <button class="home-back-btn"
-              style="background:#4a6cf7;color:#fff;border-color:#4a6cf7;"
-              onclick="switchPage('personal')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" width="15" height="15">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-        </svg>
-        Personlig forside
-      </button>
-    </div>
-
-    <div class="cal-layout">
-      <!-- Mini month picker -->
-      <div class="mini-month">
-        <div class="mini-month-nav">
-          <button class="mini-nav-btn" onclick="changePickerMonth(-1)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" width="13" height="13">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </button>
-          <span class="mini-month-title" id="picker-title"></span>
-          <button class="mini-nav-btn" onclick="changePickerMonth(1)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" width="13" height="13">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
-        <div class="mini-grid" id="mini-grid"></div>
-      </div>
-
-      <!-- Week / day view -->
-      <div class="week-view">
-        <div class="week-nav">
-          <div class="week-nav-btns">
-            <button class="week-nav-btn" onclick="changeWeek(-1)">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                   stroke="currentColor" width="13" height="13">
+      <div class="cal-layout">
+        <!-- Mini month -->
+        <div class="mini-month" aria-label="Månedsoversikt">
+          <div class="mini-month-nav">
+            <button class="mini-nav-btn" id="prev-month-btn" onclick="changePickerMonth(-1)" aria-label="Forrige måned">
+              <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
             </button>
-            <button class="week-nav-btn" onclick="changeWeek(1)">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                   stroke="currentColor" width="13" height="13">
+            <h2 class="mini-month-title" id="picker-title" aria-live="polite" aria-atomic="true"></h2>
+            <button class="mini-nav-btn" id="next-month-btn" onclick="changePickerMonth(1)" aria-label="Neste måned">
+              <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
               </svg>
             </button>
           </div>
-          <div>
-            <span class="week-title" id="week-title"></span>
-            <span class="week-num-badge" id="week-num-badge"></span>
-          </div>
-          <button class="week-today-btn" onclick="goToday()">I dag</button>
+          <!-- Day-of-week headers exposed as column headers via aria -->
+          <div class="mini-grid" role="grid" aria-label="Kalender" id="mini-grid"></div>
         </div>
 
-        <!-- Mon–Fri header strip -->
-        <div class="week-days-row" id="week-days-row"></div>
+        <!-- Day view -->
+        <div class="week-view">
+          <div class="week-nav">
+            <div class="week-nav-btns">
+              <button class="week-nav-btn" onclick="changeWeek(-1)" aria-label="Forrige uke">
+                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button class="week-nav-btn" onclick="changeWeek(1)" aria-label="Neste uke">
+                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+            <div>
+              <span class="week-title" id="week-title" aria-live="polite" aria-atomic="true"></span>
+              <span class="week-num-badge" id="week-num-badge" aria-hidden="true"></span>
+            </div>
+            <button class="week-today-btn" onclick="goToday()" aria-label="Gå til dagens dato">I dag</button>
+          </div>
 
-        <!-- Selected day events -->
-        <div class="day-events" id="day-events"></div>
+          <!-- Weekday strip — tablist -->
+          <div class="week-days-row" id="week-days-row" role="tablist" aria-label="Ukedager"></div>
+
+          <!-- Day panel -->
+          <section id="day-events" aria-live="polite" aria-atomic="true" class="day-events"></section>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</main>
+
+<!-- ══ MODAL ══ -->
+<div
+  class="modal-overlay"
+  id="modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-dialog-title"
+  aria-describedby="modal-dialog-desc"
+  hidden
+>
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <p class="modal-pretitle" id="modal-dialog-pretitle">Elevforside</p>
+        <h2 class="modal-title-text" id="modal-dialog-title"></h2>
+        <p class="modal-subtitle" id="modal-dialog-desc">Velg elever eller grupper og skru på elevforsiden</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Lukk dialogboks">
+        <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div>
+        <label class="modal-search-label" id="search-label" for="modal-search-input">
+          Søk etter elev eller gruppe
+        </label>
+        <div class="modal-search" role="search">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" style="color:#4a6070;flex-shrink:0">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+          </svg>
+          <input
+            type="search"
+            id="modal-search-input"
+            placeholder="Søk etter navn eller gruppe…"
+            oninput="filterPicker()"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div>
+        <p class="modal-section-label" id="picker-list-label">Grupper og elever</p>
+        <div id="picker-list" role="list" aria-labelledby="picker-list-label"></div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <p class="modal-footer-info" aria-live="polite">
+        <strong id="active-count">0</strong> elevforside(r) skrudd på
+      </p>
+      <div class="modal-footer-btns">
+        <button class="btn-cancel" onclick="closeModal()">Avbryt</button>
+        <button class="btn-confirm" onclick="saveModal()">Lagre innstillinger</button>
       </div>
     </div>
   </div>
-
-</div><!-- /page -->
+</div>
 
 
 <script>
-/* ════════════════════════════════════════
-   LOCALE
-════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   DATA
+══════════════════════════════════════════ */
 const NO_DAYS_FULL  = ['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
 const NO_DAYS_SHORT = ['Søn','Man','Tir','Ons','Tor','Fre','Lør'];
-const NO_MONTHS     = ['Januar','Februar','Mars','April','Mai','Juni',
-                       'Juli','August','September','Oktober','November','Desember'];
-const NO_MONTHS_LOW = ['januar','februar','mars','april','mai','juni',
-                       'juli','august','september','oktober','november','desember'];
-
-function isoWeek(d) {
-  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  dt.setUTCDate(dt.getUTCDate() + 4 - (dt.getUTCDay() || 7));
-  const y0 = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1));
-  return Math.ceil((((dt - y0) / 86400000) + 1) / 7);
-}
-function sameDay(a,b){
-  return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
-}
-function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
-function weekMonday(d){
-  const day=d.getDay(); const diff=day===0?-6:1-day;
-  const m=new Date(d); m.setDate(d.getDate()+diff); m.setHours(0,0,0,0); return m;
-}
-function mkDate(y,m,day){ const r=new Date(y,m-1,day); r.setHours(0,0,0,0); return r; }
-
-/* ════════════════════════════════════════
-   COLLECTION DATA  (elevforsider / samlinger)
-════════════════════════════════════════ */
-const collections = [
-  {
-    id:'norgeshistorie', title:'Norgeshistorie', emoji:'🏔️',
-    color:'#3b82f6',
-    start: mkDate(2026,5,11), end: mkDate(2026,5,15),
-    group:'8B', badge:'Aktiv'
-  },
-  {
-    id:'geografi', title:'Geografi', emoji:'🌍',
-    color:'#7c3aed',
-    start: mkDate(2026,5,12), end: mkDate(2026,5,22),
-    group:'9A', badge:'Utkast'
-  },
-  {
-    id:'naturfag', title:'Naturfag', emoji:'🔬',
-    color:'#14b8a6',
-    start: mkDate(2026,5,13), end: mkDate(2026,5,16),
-    group:'7C', badge:'Aktiv'
-  },
-  {
-    id:'norsk', title:'Norsk litteratur', emoji:'📚',
-    color:'#ec4899',
-    start: mkDate(2026,5,15), end: mkDate(2026,5,29),
-    group:'8A', badge:'Delt'
-  },
-  {
-    id:'matematikk', title:'Matematikk', emoji:'📐',
-    color:'#f59e0b',
-    start: mkDate(2026,5,19), end: mkDate(2026,5,22),
-    group:'9B', badge:'Utkast'
-  },
-];
-
+const NO_MONTHS     = ['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'];
+const NO_MONTHS_LOW = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
-function eventsOnDay(date){
-  return collections.filter(c => date >= c.start && date <= c.end);
-}
-function hasEvent(date){ return eventsOnDay(date).length > 0; }
+function mkDate(y,m,d){ const r=new Date(y,m-1,d); r.setHours(0,0,0,0); return r; }
 
-/* ════════════════════════════════════════
-   CALENDAR STATE
-════════════════════════════════════════ */
+const collections = [
+  { id:'norgeshistorie', title:'Norgeshistorie', emoji:'📄', bg:'#dbeafe', color:'#3b82f6', group:'8B', badge:'Aktiv',  start:mkDate(2026,5,11), end:mkDate(2026,5,15) },
+  { id:'geografi',       title:'Geografi',       emoji:'🌍', bg:'#ede9fe', color:'#7c3aed', group:'9A', badge:'Utkast', start:mkDate(2026,5,12), end:mkDate(2026,5,22) },
+  { id:'naturfag',       title:'Naturfag',       emoji:'🔬', bg:'#ccfbf1', color:'#14b8a6', group:'7C', badge:'Aktiv',  start:mkDate(2026,5,13), end:mkDate(2026,5,16) },
+  { id:'norsk',          title:'Norsk litteratur',emoji:'📚', bg:'#fce7f3', color:'#ec4899', group:'8A', badge:'Delt',   start:mkDate(2026,5,15), end:mkDate(2026,5,29) },
+  { id:'matematikk',     title:'Matematikk',     emoji:'📐', bg:'#fef3c7', color:'#f59e0b', group:'9B', badge:'Utkast', start:mkDate(2026,5,19), end:mkDate(2026,5,22) },
+];
+
+const oppgaverData = [
+  { title:'Mellomkrigstiden', tasks:18, badge:'Utkast', badgeColor:'#1d4ed8', badgeBg:'#dbeafe', bg:'#b8d4f0', emoji:'🗺️', tag:'Historie' },
+  { title:'Dydsetikk',        tasks:4,  badge:'Utkast', badgeColor:'#1d4ed8', badgeBg:'#dbeafe', bg:'#c8e6c9', emoji:'🌳', tag:'Etikk'    },
+  { title:'Vikingene (1)',    tasks:32, badge:'Utkast', badgeColor:'#1d4ed8', badgeBg:'#dbeafe', bg:'#c0e0f8', emoji:'⛵', tag:'Historie'  },
+  { title:'Allergi',          tasks:20, badge:'Aktiv',  badgeColor:'#065f46', badgeBg:'#d1fae5', bg:'#d4edda', emoji:'🌿', tag:'Helse'     },
+];
+
+const groups = [
+  { id:'g1', name:'Klasse 7C', color:'#14b8a6', students:[
+    { id:'s1',  name:'Amira Hassan',      initials:'AH', color:'#3b82f6' },
+    { id:'s2',  name:'Bjørn Eriksen',     initials:'BE', color:'#7c3aed' },
+    { id:'s3',  name:'Camilla Nguyen',    initials:'CN', color:'#ec4899' },
+    { id:'s4',  name:'Dawit Tesfaye',     initials:'DT', color:'#f59e0b' },
+  ]},
+  { id:'g2', name:'Klasse 8A', color:'#ec4899', students:[
+    { id:'s5',  name:'Elise Martinsen',   initials:'EM', color:'#14b8a6' },
+    { id:'s6',  name:'Faris Al-Amin',     initials:'FA', color:'#3b82f6' },
+    { id:'s7',  name:'Guro Lindberg',     initials:'GL', color:'#f59e0b' },
+  ]},
+  { id:'g3', name:'Klasse 8B', color:'#3b82f6', students:[
+    { id:'s8',  name:'Henrik Solberg',    initials:'HS', color:'#7c3aed' },
+    { id:'s9',  name:'Ida Bakken',        initials:'IB', color:'#ec4899' },
+    { id:'s10', name:'Jonas Kristiansen', initials:'JK', color:'#14b8a6' },
+  ]},
+  { id:'g4', name:'Klasse 9A', color:'#7c3aed', students:[
+    { id:'s11', name:'Kaja Andersen',     initials:'KA', color:'#3b82f6' },
+    { id:'s12', name:'Lars Haugen',       initials:'LH', color:'#f59e0b' },
+    { id:'s13', name:'Mia Johansen',      initials:'MJ', color:'#ec4899' },
+    { id:'s14', name:'Noah Svensson',     initials:'NS', color:'#14b8a6' },
+  ]},
+  { id:'g5', name:'Klasse 9B', color:'#f59e0b', students:[
+    { id:'s15', name:'Olivia Berg',       initials:'OB', color:'#3b82f6' },
+    { id:'s16', name:'Petter Nygaard',    initials:'PN', color:'#7c3aed' },
+    { id:'s17', name:'Rania El-Hakim',    initials:'RE', color:'#ec4899' },
+  ]},
+];
+
+/* ══════════════════════════════════════════
+   RENDER OPPGAVER
+══════════════════════════════════════════ */
+function renderOppgaverCards(){
+  const grid = document.getElementById('oppgaver-grid');
+  grid.innerHTML = oppgaverData.map(d => `
+    <li>
+      <article class="oppgave-card">
+        <div class="card-thumb" style="background:linear-gradient(135deg,${d.bg},#4a90d9);padding-top:46%" aria-hidden="true">
+          <div class="card-thumb-ph">${d.emoji}</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${d.title}</h3>
+          <p class="oppgave-meta">
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15H9v-2.828z"/></svg>
+            ${d.tasks} oppgaver
+          </p>
+          <span class="oppgave-status" style="background:${d.badgeBg};color:${d.badgeColor}">${d.badge}</span>
+        </div>
+      </article>
+    </li>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+let modalState = [];
+let lastFocusedEl = null;
+
+function openModal(title){
+  lastFocusedEl = document.activeElement;
+  document.getElementById('modal-dialog-title').textContent = title;
+  document.getElementById('modal-search-input').value = '';
+  modalState = groups.map(g=>({ ...g, on:false, expanded:false, students:g.students.map(s=>({...s,on:false})) }));
+  renderPickerList(modalState);
+  updateActiveCount();
+  const overlay = document.getElementById('modal-overlay');
+  overlay.hidden = false;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Move focus to first focusable element in modal
+  setTimeout(()=>{ document.getElementById('modal-search-input').focus(); },100);
+}
+
+function closeModal(){
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.remove('open');
+  overlay.hidden = true;
+  document.body.style.overflow = '';
+  if(lastFocusedEl) lastFocusedEl.focus();
+}
+
+function saveModal(){ closeModal(); }
+
+function handleOverlayKeyDown(e){
+  if(e.key==='Escape') closeModal();
+  // Trap focus within modal
+  if(e.key==='Tab'){
+    const modal = document.getElementById('modal');
+    const focusable = Array.from(modal.querySelectorAll(
+      'button,input,[tabindex]:not([tabindex="-1"])'
+    )).filter(el=>!el.disabled);
+    const first = focusable[0], last = focusable[focusable.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+}
+document.getElementById('modal-overlay').addEventListener('keydown', handleOverlayKeyDown);
+document.getElementById('modal-overlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
+
+function updateActiveCount(){
+  let n=0; modalState.forEach(g=>g.students.forEach(s=>{ if(s.on) n++; }));
+  document.getElementById('active-count').textContent=n;
+}
+
+function setGroupToggle(gid,val){
+  const g=modalState.find(x=>x.id===gid);
+  g.on=val; g.students.forEach(s=>s.on=val);
+  renderPickerList(modalState); updateActiveCount();
+}
+function setStudentToggle(gid,sid,val){
+  const g=modalState.find(x=>x.id===gid);
+  const s=g.students.find(x=>x.id===sid);
+  s.on=val; g.on=g.students.every(s=>s.on);
+  renderPickerList(modalState); updateActiveCount();
+}
+function toggleExpand(gid){
+  const g=modalState.find(x=>x.id===gid);
+  g.expanded=!g.expanded; renderPickerList(modalState);
+}
+
+function filterPicker(){
+  const q=document.getElementById('modal-search-input').value.toLowerCase().trim();
+  if(!q){ renderPickerList(modalState); return; }
+  const filtered=modalState.map(g=>{
+    const matchGroup=g.name.toLowerCase().includes(q);
+    const students=matchGroup?g.students:g.students.filter(s=>s.name.toLowerCase().includes(q));
+    return {...g, students, expanded:true};
+  }).filter(g=>g.students.length>0);
+  renderPickerList(filtered);
+}
+
+function renderPickerList(data){
+  const list=document.getElementById('picker-list');
+  list.innerHTML='';
+  if(!data.length){
+    const msg=document.createElement('p');
+    msg.style.cssText='color:#4a6070;font-size:13px;padding:12px 0';
+    msg.textContent='Ingen treff'; list.appendChild(msg); return;
+  }
+  data.forEach(g=>{
+    const realG=modalState.find(x=>x.id===g.id);
+    const wrap=document.createElement('div');
+    wrap.className='picker-group';
+    wrap.setAttribute('role','listitem');
+
+    // Group header — button for expand/collapse, separate toggle
+    const hdr=document.createElement('button');
+    hdr.className='picker-group-header';
+    hdr.setAttribute('aria-expanded', g.expanded?'true':'false');
+    hdr.setAttribute('aria-controls',`students-${g.id}`);
+    hdr.setAttribute('aria-label',`${g.name}, ${g.students.length} elever – ${g.expanded?'skjul':'vis'} elevliste`);
+    hdr.innerHTML=`
+      <div class="picker-group-left">
+        <div class="picker-group-icon" style="background:${g.color}" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="picker-group-name">${g.name}</div>
+          <div class="picker-group-count">${g.students.length} elever</div>
+        </div>
+      </div>
+      <div class="picker-group-right" style="pointer-events:none">
+        <span class="toggle-visual-label" aria-hidden="true">Skru på elevforside</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+             width="16" height="16" class="group-chevron ${g.expanded?'open':''}" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </div>`;
+    hdr.addEventListener('click', ()=>toggleExpand(g.id));
+    hdr.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleExpand(g.id); } });
+
+    // Separate toggle for the group (not inside the expand button)
+    const groupToggleWrap=document.createElement('div');
+    groupToggleWrap.style.cssText='padding:6px 14px;display:flex;align-items:center;gap:8px;justify-content:flex-end;';
+    const toggleId=`toggle-group-${g.id}`;
+    groupToggleWrap.innerHTML=`
+      <label for="${toggleId}" style="font-size:12px;font-weight:600;color:#7090b0;cursor:pointer;">
+        Skru på elevforside for hele ${g.name}
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="${toggleId}" role="switch"
+               aria-label="Skru på elevforside for hele ${g.name}"
+               ${realG.on?'checked':''}
+               onchange="setGroupToggle('${g.id}',this.checked)"/>
+        <span class="toggle-slider"></span>
+      </label>`;
+
+    // Student list
+    const slist=document.createElement('div');
+    slist.className='student-list'+(g.expanded?' open':'');
+    slist.id=`students-${g.id}`;
+    slist.setAttribute('role','list');
+
+    g.students.forEach(s=>{
+      const realS=realG.students.find(x=>x.id===s.id);
+      const row=document.createElement('div');
+      row.className='student-row';
+      row.setAttribute('role','listitem');
+      const stId=`toggle-${g.id}-${s.id}`;
+      row.innerHTML=`
+        <div class="student-left">
+          <div class="student-avatar" style="background:${s.color}" aria-hidden="true">${s.initials}</div>
+          <span class="student-name">${s.name}</span>
+        </div>
+        <div class="toggle-wrap">
+          <label for="${stId}" style="font-size:12px;font-weight:600;color:#7090b0;cursor:pointer;">
+            Skru på
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="${stId}" role="switch"
+                   aria-label="Skru på elevforside for ${s.name}"
+                   ${realS.on?'checked':''}
+                   onchange="setStudentToggle('${g.id}','${s.id}',this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>`;
+      slist.appendChild(row);
+    });
+
+    wrap.appendChild(hdr);
+    wrap.appendChild(groupToggleWrap);
+    wrap.appendChild(slist);
+    list.appendChild(wrap);
+  });
+}
+
+/* ══════════════════════════════════════════
+   CALENDAR HELPERS
+══════════════════════════════════════════ */
+function isoWeek(d){
+  const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  dt.setUTCDate(dt.getUTCDate()+4-(dt.getUTCDay()||7));
+  const y0=new Date(Date.UTC(dt.getUTCFullYear(),0,1));
+  return Math.ceil((((dt-y0)/86400000)+1)/7);
+}
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function weekMonday(d){ const day=d.getDay(); const diff=day===0?-6:1-day; const m=new Date(d); m.setDate(d.getDate()+diff); m.setHours(0,0,0,0); return m; }
+
 let selectedDay  = new Date(TODAY);
-let pickerMonth  = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+let pickerMonth  = new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+
+function eventsOnDay(date){ return collections.filter(c=>date>=c.start&&date<=c.end); }
+function hasEvent(date){ return eventsOnDay(date).length>0; }
 
 /* ── Mini month ── */
 function renderMiniMonth(){
-  const yr = pickerMonth.getFullYear();
-  const mo = pickerMonth.getMonth();
-  document.getElementById('picker-title').textContent = `${NO_MONTHS[mo]} ${yr}`;
-  const grid = document.getElementById('mini-grid');
-  grid.innerHTML = '';
+  const yr=pickerMonth.getFullYear(), mo=pickerMonth.getMonth();
+  document.getElementById('picker-title').textContent=`${NO_MONTHS[mo]} ${yr}`;
 
-  ['M','T','O','T','F','L','S'].forEach(l => {
-    const h=document.createElement('div'); h.className='mini-dow'; h.textContent=l;
-    grid.appendChild(h);
+  const grid=document.getElementById('mini-grid'); grid.innerHTML='';
+
+  // Column headers row
+  const dowRow=document.createElement('div'); dowRow.setAttribute('role','row');
+  ['M','T','O','T','F','L','S'].forEach((l,i)=>{
+    const h=document.createElement('div');
+    h.setAttribute('role','columnheader');
+    h.setAttribute('aria-label',['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'][i]);
+    h.className='mini-dow'; h.textContent=l; dowRow.appendChild(h);
   });
+  grid.appendChild(dowRow);
 
-  const first = new Date(yr,mo,1);
-  let startDow = first.getDay(); startDow = startDow===0?6:startDow-1;
-  const daysInMonth = new Date(yr,mo+1,0).getDate();
-  const prevDays = new Date(yr,mo,0).getDate();
+  const first=new Date(yr,mo,1);
+  let startDow=first.getDay(); startDow=startDow===0?6:startDow-1;
+  const dim=new Date(yr,mo+1,0).getDate();
+  const prevDim=new Date(yr,mo,0).getDate();
+  const cells=[]; let weekRow=document.createElement('div'); weekRow.setAttribute('role','row');
 
+  // Leading blanks
   for(let i=0;i<startDow;i++){
-    const c=document.createElement('div');
-    c.className='mini-cell other-month';
-    c.textContent=prevDays-startDow+1+i;
-    grid.appendChild(c);
+    const c=document.createElement('button');
+    c.className='mini-cell other-month'; c.textContent=prevDim-startDow+1+i;
+    c.setAttribute('aria-hidden','true'); c.tabIndex=-1;
+    c.disabled=true; weekRow.appendChild(c);
+    if((i+1)%7===0){ grid.appendChild(weekRow); weekRow=document.createElement('div'); weekRow.setAttribute('role','row'); }
   }
-  for(let day=1;day<=daysInMonth;day++){
+
+  for(let day=1;day<=dim;day++){
     const date=new Date(yr,mo,day);
-    const dow=date.getDay(); const weekend=dow===0||dow===6;
-    const isTod=sameDay(date,TODAY); const isSel=sameDay(date,selectedDay);
-    const hasEv=hasEvent(date);
-    const c=document.createElement('div');
+    const dow=date.getDay(); const isWeekend=dow===0||dow===6;
+    const isTod=sameDay(date,TODAY); const isSel=sameDay(date,selectedDay); const hasEv=hasEvent(date);
+    const c=document.createElement('button');
     let cls='mini-cell';
-    if(weekend)cls+=' weekend';
-    if(isTod)  cls+=' today';
-    if(isSel)  cls+=' selected';
-    if(hasEv)  cls+=' has-event';
-    c.className=cls; c.textContent=day;
+    if(isWeekend) cls+=' weekend';
+    if(isTod)     cls+=' today';
+    if(hasEv)     cls+=' has-event';
+    c.className=cls;
+    c.textContent=day;
+    c.setAttribute('role','gridcell');
+    c.setAttribute('aria-pressed', isSel?'true':'false');
+    c.setAttribute('aria-label',
+      `${day}. ${NO_MONTHS_LOW[mo]}${isTod?' (i dag)':''}${hasEv?' – har samlinger':''}${isSel?' – valgt':''}`
+    );
     c.addEventListener('click',()=>{ selectedDay=date; renderWeekView(); renderMiniMonth(); });
-    grid.appendChild(c);
-  }
-  const total=startDow+daysInMonth;
-  const trail=total%7===0?0:7-(total%7);
-  for(let i=1;i<=trail;i++){
-    const c=document.createElement('div'); c.className='mini-cell other-month'; c.textContent=i;
-    grid.appendChild(c);
+    weekRow.appendChild(c);
+    const colPos=(startDow+day-1)%7;
+    if(colPos===6||day===dim){ grid.appendChild(weekRow); weekRow=document.createElement('div'); weekRow.setAttribute('role','row'); }
   }
 }
 
 function changePickerMonth(dir){
   pickerMonth.setMonth(pickerMonth.getMonth()+dir);
   renderMiniMonth();
+  document.getElementById('picker-title').focus?.();
 }
 
 /* ── Week view ── */
 function renderWeekView(){
-  const mon = weekMonday(selectedDay);
-  const sun = addDays(mon,6);
-  const wk  = isoWeek(selectedDay);
+  const mon=weekMonday(selectedDay);
+  const sun=addDays(mon,6);
+  const wk=isoWeek(selectedDay);
 
-  /* Title */
-  const startMo = NO_MONTHS_LOW[mon.getMonth()];
-  const endMo   = NO_MONTHS_LOW[sun.getMonth()];
-  document.getElementById('week-title').textContent =
-    startMo===endMo
-      ? `${mon.getDate()}–${sun.getDate()}. ${startMo} ${mon.getFullYear()}`
-      : `${mon.getDate()}. ${startMo} – ${sun.getDate()}. ${endMo} ${mon.getFullYear()}`;
-  document.getElementById('week-num-badge').textContent = `Uke ${wk}`;
+  const startMo=NO_MONTHS_LOW[mon.getMonth()], endMo=NO_MONTHS_LOW[sun.getMonth()];
+  const rangeText=startMo===endMo
+    ?`${mon.getDate()}–${sun.getDate()}. ${startMo} ${mon.getFullYear()}`
+    :`${mon.getDate()}. ${startMo} – ${sun.getDate()}. ${endMo} ${mon.getFullYear()}`;
 
-  /* Five-day strip Mon–Fri */
-  const strip = document.getElementById('week-days-row');
-  strip.innerHTML='';
+  document.getElementById('week-title').textContent=rangeText;
+  document.getElementById('week-num-badge').textContent=`Uke ${wk}`;
+  document.getElementById('week-num-badge').setAttribute('aria-label',`Uke ${wk}`);
+
+  // Strip
+  const strip=document.getElementById('week-days-row'); strip.innerHTML='';
   for(let i=0;i<5;i++){
     const date=addDays(mon,i);
     const dow=date.getDay();
-    const isTod=sameDay(date,TODAY); const isSel=sameDay(date,selectedDay);
-    const hasEv=hasEvent(date);
-    const cell=document.createElement('div');
-    cell.className='week-day-header'+(isSel?' active':'');
+    const isTod=sameDay(date,TODAY); const isSel=sameDay(date,selectedDay); const hasEv=hasEvent(date);
+    const btn=document.createElement('button');
+    btn.className='strip-day-btn';
+    btn.setAttribute('role','tab');
+    btn.setAttribute('aria-selected',isSel?'true':'false');
+    btn.setAttribute('id',`tab-${date.toISOString().slice(0,10)}`);
+    btn.setAttribute('aria-controls','day-events');
+    btn.setAttribute('aria-label',
+      `${NO_DAYS_FULL[dow]} ${date.getDate()}. ${NO_MONTHS_LOW[date.getMonth()]}${isTod?' (i dag)':''}${hasEv?', har samlinger':''}`
+    );
     const numHtml=isTod
-      ?`<div class="wdh-num today">${date.getDate()}</div>`
-      :`<div class="wdh-num">${date.getDate()}</div>`;
-    cell.innerHTML=`
-      <div class="wdh-name">${NO_DAYS_SHORT[dow]}</div>
-      ${numHtml}
-      <div class="wdh-dot${hasEv?' visible':''}"></div>`;
-    cell.addEventListener('click',()=>{ selectedDay=date; renderWeekView(); renderMiniMonth(); });
-    strip.appendChild(cell);
+      ?`<div class="wdh-num today" aria-hidden="true">${date.getDate()}</div>`
+      :`<div class="wdh-num" aria-hidden="true">${date.getDate()}</div>`;
+    btn.innerHTML=`<div class="wdh-name" aria-hidden="true">${NO_DAYS_SHORT[dow]}</div>${numHtml}<div class="wdh-dot${hasEv?' visible':''}" aria-hidden="true"></div>`;
+    btn.addEventListener('click',()=>{ selectedDay=date; renderWeekView(); renderMiniMonth(); });
+    // Arrow key navigation within tablist
+    btn.addEventListener('keydown', e=>{
+      if(e.key==='ArrowRight'){ e.preventDefault(); const next=strip.children[Math.min(i+1,4)]; next?.focus(); }
+      if(e.key==='ArrowLeft') { e.preventDefault(); const prev=strip.children[Math.max(i-1,0)]; prev?.focus(); }
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); }
+    });
+    strip.appendChild(btn);
   }
 
-  /* Sync picker month if we've navigated far */
-  const yr=selectedDay.getFullYear(), mo=selectedDay.getMonth();
-  if(pickerMonth.getFullYear()!==yr||pickerMonth.getMonth()!==mo){
-    pickerMonth=new Date(yr,mo,1); renderMiniMonth();
-  }
-
+  // Sync picker
+  const yr=selectedDay.getFullYear(),mo2=selectedDay.getMonth();
+  if(pickerMonth.getFullYear()!==yr||pickerMonth.getMonth()!==mo2){ pickerMonth=new Date(yr,mo2,1); }
+  renderMiniMonth();
   renderDayEvents();
 }
 
 function renderDayEvents(){
-  const events = eventsOnDay(selectedDay);
-  const dow    = selectedDay.getDay();
-  const container = document.getElementById('day-events');
-  container.innerHTML='';
+  const events=eventsOnDay(selectedDay);
+  const dow=selectedDay.getDay();
+  const panel=document.getElementById('day-events');
+  panel.innerHTML='';
 
-  const label=document.createElement('div');
-  label.className='day-selected-label';
-  label.textContent=`${NO_DAYS_FULL[dow]} ${selectedDay.getDate()}. ${NO_MONTHS_LOW[selectedDay.getMonth()]}`;
-  container.appendChild(label);
+  const heading=document.createElement('h3');
+  heading.className='day-selected-label';
+  heading.textContent=`${NO_DAYS_FULL[dow]} ${selectedDay.getDate()}. ${NO_MONTHS_LOW[selectedDay.getMonth()]}`;
+  panel.appendChild(heading);
 
-  if(events.length===0){
-    container.innerHTML+=`
-      <div class="day-empty">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <p>Ingen aktive samlinger denne dagen</p>
-      </div>`;
-    return;
+  if(!events.length){
+    const em=document.createElement('div');
+    em.className='day-empty'; em.setAttribute('role','status');
+    em.innerHTML=`<svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="38" height="38"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p>Ingen aktive samlinger denne dagen</p>`;
+    panel.appendChild(em); return;
   }
 
+  const list=document.createElement('ul'); list.style.listStyle='none';
   events.forEach(ev=>{
     const spanDays=Math.round((ev.end-ev.start)/86400000)+1;
     const spanWeeks=Math.round(spanDays/7);
     const spanLabel=spanWeeks>=1?`${spanWeeks} uke${spanWeeks>1?'r':''}`:`${spanDays} dag${spanDays>1?'er':''}`;
     const fmt=d=>`${d.getDate()}. ${NO_MONTHS_LOW[d.getMonth()]}`;
 
-    const row=document.createElement('div');
-    row.className='ev-row';
-    row.innerHTML=`
-      <div class="ev-stripe" style="background:${ev.color}"></div>
-      <div class="ev-body">
-        <div class="ev-title">${ev.emoji} ${ev.title}</div>
-        <div class="ev-meta">
-          <span>Gruppe: ${ev.group}</span>
-          <span>${fmt(ev.start)} – ${fmt(ev.end)}</span>
+    const li=document.createElement('li');
+    li.style.marginBottom='10px';
+    li.innerHTML=`
+      <div class="ev-row">
+        <div class="ev-stripe" style="background:${ev.color}" aria-hidden="true"></div>
+        <div class="ev-body">
+          <p class="ev-title">${ev.emoji} ${ev.title}</p>
+          <p class="ev-meta"><span>Gruppe: ${ev.group}</span><span>${fmt(ev.start)} – ${fmt(ev.end)}</span></p>
+          <p class="ev-span">
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Varighet: ${spanLabel}
+          </p>
+          <span class="ev-badge" style="background:${ev.color}22;color:${ev.color}" aria-label="Status: ${ev.badge}">${ev.badge}</span>
         </div>
-        <div class="ev-span">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor" width="11" height="11">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-          Varighet: ${spanLabel}
+        <div class="ev-open-btn">
+          <button onclick="switchPage('${ev.id}')"
+                  aria-label="Åpne samlingen ${ev.title}"
+                  style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;
+                         border:1.5px solid ${ev.color};background:transparent;color:${ev.color};
+                         cursor:pointer;white-space:nowrap;transition:background .15s;">
+            Åpne samling →
+          </button>
         </div>
-        <div class="ev-badge" style="background:${ev.color}22;color:${ev.color}">${ev.badge}</div>
-      </div>
-      <div style="padding:0 14px;display:flex;align-items:center;">
-        <button onclick="switchPage('${ev.id}')"
-          style="padding:7px 14px;border-radius:8px;border:1.5px solid ${ev.color};
-                 background:transparent;color:${ev.color};font-size:12px;font-weight:700;
-                 cursor:pointer;white-space:nowrap;">
-          Åpne samling →
-        </button>
       </div>`;
-    container.appendChild(row);
+    list.appendChild(li);
   });
+  panel.appendChild(list);
 }
 
 function changeWeek(dir){
@@ -1318,50 +1529,84 @@ function changeWeek(dir){
   selectedDay=next; renderWeekView(); renderMiniMonth();
 }
 function goToday(){
-  selectedDay=new Date(TODAY);
-  pickerMonth=new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+  selectedDay=new Date(TODAY); pickerMonth=new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
   renderWeekView(); renderMiniMonth();
 }
 
-/* ════════════════════════════════════════
-   PAGE SWITCHER
-════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   DROPDOWN — ARIA menu pattern
+══════════════════════════════════════════ */
 const ALL_PAGES=['personal','norgeshistorie','geografi','naturfag','norsk','matematikk','calendar'];
 
+function toggleDropdown(){
+  const btn=document.getElementById('ef-menu-btn');
+  const menu=document.getElementById('ef-menu');
+  const isOpen=btn.getAttribute('aria-expanded')==='true';
+  if(isOpen){ closeDropdown(); }
+  else {
+    btn.setAttribute('aria-expanded','true');
+    menu.setAttribute('aria-hidden','false');
+    // Focus first item
+    menu.querySelector('[role="menuitem"]')?.focus();
+  }
+}
+
+function closeDropdown(){
+  const btn=document.getElementById('ef-menu-btn');
+  const menu=document.getElementById('ef-menu');
+  btn.setAttribute('aria-expanded','false');
+  menu.setAttribute('aria-hidden','true');
+}
+
+// Arrow key navigation within menu
+document.getElementById('ef-menu').addEventListener('keydown', e=>{
+  const items=[...document.querySelectorAll('#ef-menu [role="menuitem"]')];
+  const idx=items.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'){ e.preventDefault(); items[(idx+1)%items.length]?.focus(); }
+  if(e.key==='ArrowUp')  { e.preventDefault(); items[(idx-1+items.length)%items.length]?.focus(); }
+  if(e.key==='Escape')   { closeDropdown(); document.getElementById('ef-menu-btn').focus(); }
+  if(e.key==='Home')     { e.preventDefault(); items[0]?.focus(); }
+  if(e.key==='End')      { e.preventDefault(); items[items.length-1]?.focus(); }
+});
+
+// Close when focus leaves the widget
+document.getElementById('ef-dropdown-wrap').addEventListener('focusout', e=>{
+  if(!document.getElementById('ef-dropdown-wrap').contains(e.relatedTarget)) closeDropdown();
+});
+
+document.addEventListener('click', e=>{
+  if(!document.getElementById('ef-dropdown-wrap').contains(e.target)) closeDropdown();
+});
+
+/* ══════════════════════════════════════════
+   PAGE SWITCHER
+══════════════════════════════════════════ */
 function switchPage(id){
   ALL_PAGES.forEach(p=>{
     document.getElementById('page-'+p).classList.remove('active');
     const dd=document.getElementById('dd-'+p);
-    if(dd) dd.classList.remove('active');
+    if(dd) dd.removeAttribute('aria-current');
   });
   document.getElementById('page-'+id).classList.add('active');
   const ddItem=document.getElementById('dd-'+id);
-  if(ddItem) ddItem.classList.add('active');
+  if(ddItem) ddItem.setAttribute('aria-current','page');
 
-  /* Close dropdown */
-  document.getElementById('ef-dropdown-menu').classList.remove('open');
-  document.getElementById('ef-dropdown-btn').classList.remove('open');
-
-  /* Init calendar on first open */
+  closeDropdown();
   if(id==='calendar'){ renderMiniMonth(); renderWeekView(); }
-
   window.scrollTo({top:0,behavior:'smooth'});
+
+  // Move focus to main heading
+  const panel=document.getElementById('page-'+id);
+  const firstHeading=panel.querySelector('h1,h2');
+  if(firstHeading){ firstHeading.setAttribute('tabindex','-1'); firstHeading.focus(); }
 }
 
-/* ── Dropdown ── */
-function toggleDropdown(){
-  const btn=document.getElementById('ef-dropdown-btn');
-  const menu=document.getElementById('ef-dropdown-menu');
-  const open=menu.classList.toggle('open');
-  btn.classList.toggle('open',open);
-}
-document.addEventListener('click',e=>{
-  const wrap=document.getElementById('ef-dropdown-wrap');
-  if(!wrap.contains(e.target)){
-    document.getElementById('ef-dropdown-menu').classList.remove('open');
-    document.getElementById('ef-dropdown-btn').classList.remove('open');
-  }
-});
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+renderOppgaverCards();
+renderMiniMonth();
+renderWeekView();
 </script>
 </body>
 </html>
