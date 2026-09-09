@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-bok prototype – responsiv side</title>
+<style>
+  :root{
+    --page-ratio: 1.41421356;      /* A4/A3 liggende (√2) – samme ratio for begge */
+    --min-stage-height: 650px;     /* under denne høyden -> scroll, som i dag */
+    --gutter: clamp(16px, 3vw, 40px);
+    --toolbar-h: 60px;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; font-family:"Segoe UI",Arial,sans-serif; background:#c9d6f5; }
+
+  /* ============ STAGE ============
+     Egen scrollcontainer (komponenten eier sin egen overflow –
+     viktig siden den skal leve inni en større side, ikke eie hele dokumentet) */
+  .stage{
+    height:100vh; height:100dvh;      /* dvh med vh-fallback */
+    min-height:var(--min-stage-height);
+    overflow:auto;                    /* -> scroll KUN når innhold/vindu tvinger det */
+    display:flex; align-items:center; justify-content:center;
+    padding: var(--gutter) clamp(16px,6vw,90px); /* ekstra sidepadding gir plass til pilene */
+  }
+
+  /* ============ BOOK (frame + toolbar, samme bredde) ============ */
+  .book{
+    width: min(
+      100%,
+      calc((100vh - var(--toolbar-h) - (var(--gutter) * 3)) * var(--page-ratio)),
+      calc((100dvh - var(--toolbar-h) - (var(--gutter) * 3)) * var(--page-ratio))
+    );
+  }
+
+  /* ============ FRAME: selve "siden" – låst ratio, men kan vokse ============ */
+  .frame{
+    position:relative;
+    width:100%;
+    aspect-ratio: var(--page-ratio);
+    /* Ingen height satt, og overflow er visible -> nettleseren lar boksen
+       vokse i høyden hvis innholdet (bobla) trenger mer plass enn ratio gir. */
+    overflow:visible;
+    border-radius:16px;
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+  }
+
+  .bg-layer{
+    position:absolute; inset:0;           /* alltid nøyaktig samme størrelse som .frame,
+                                              selv når .frame vokser pga. overflow */
+    border-radius:16px;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 78% 62%, #fff6cf 0 3%, transparent 4%),
+      linear-gradient(180deg,#bcd4f0 0%,#8fb3e0 35%,#4f86b9 55%,#2f6a9e 60%,#1c5486 100%);
+  }
+  .bg-layer::before{ /* enkelt "isfjell"-silhuett så bakgrunnen ikke er helt tom */
+    content:""; position:absolute; inset:0;
+    background:
+      polygon-gradient, /* ignorer - fallback under */
+      linear-gradient(115deg, transparent 55%, rgba(255,255,255,.55) 56% 63%, transparent 64%),
+      linear-gradient(65deg, transparent 70%, rgba(255,255,255,.4) 71% 80%, transparent 81%);
+  }
+
+  .overlay{
+    position:relative;               /* i normal flow -> styrer .frame sin content-høyde */
+    min-height:100%;                 /* fyll minst hele ratio-høyden */
+    display:flex; flex-direction:column;
+    padding: 4% 5%;
+    z-index:1;
+  }
+
+  .bubble{
+    background:#fff; border-radius:14px;
+    padding: clamp(10px,1.6vw,22px);
+    max-width:58%;
+    box-shadow:0 6px 16px rgba(0,0,0,.18);
+    font-size: clamp(13px, 1.6vw, 21px);
+    line-height:1.55;
+  }
+  .bubble p{ margin:0 0 .55em; } .bubble p:last-child{ margin-bottom:0; }
+
+  .spacer{ flex:1 1 auto; }            /* kan krympe til 0 hvis bobla trenger plassen */
+
+  .word-row{ display:flex; justify-content:center; gap:28px; flex-wrap:wrap; }
+  .word-group{ display:flex; gap:8px; }
+  .tile{
+    width:clamp(52px,7vw,92px); background:#fff; border:1px solid #e2e2e2;
+    border-radius:8px; text-align:center; padding:6px 4px;
+    font-size:clamp(9px,.9vw,13px);
+  }
+  .tile .ic{ font-size:clamp(18px,2.4vw,30px); display:block; }
+
+  .nav-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:44px; height:88px; border-radius:44px; border:1px solid #d3d3d3;
+    background:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:20px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,.1);
+  }
+  .nav-arrow.prev{ left:-58px; } .nav-arrow.next{ right:-58px; }
+
+  /* ============ TOOLBAR (utenfor bildet, samme bredde) ============ */
+  .toolbar{
+    height:var(--toolbar-h);
+    margin-top:12px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    flex-wrap:wrap;
+  }
+  .toolbar .left, .toolbar .right{ display:flex; gap:8px; }
+  .pill-btn{
+    border:1px solid #d3d3d3; background:#fff; border-radius:22px;
+    padding:8px 16px; font-size:14px; cursor:pointer; display:flex; gap:6px; align-items:center;
+  }
+  .pill-btn.active{ background:#3355dd; color:#fff; border-color:#3355dd; }
+  .icon-btn{
+    width:40px; height:40px; border-radius:50%; border:1px solid #d3d3d3;
+    background:#fff; cursor:pointer; font-size:16px;
+  }
+
+  /* Skjul piler på smale skjermer – ikke plass utenfor rammen */
+  @media (max-width:900px){ .nav-arrow{ display:none; } .stage{ padding-inline:var(--gutter); } }
+
+  /* Skjul fullskjerm-knapp på touch/liten skjerm (virker dårlig/ikke i det hele tatt der) */
+  @media (max-width:820px), (pointer:coarse) and (orientation:portrait){
+    #fullscreenBtn{ display:none; }
+  }
+
+  /* ============ FULLSKJERM ============
+     Vi endrer IKKE størrelsesformlene – frame beholder ratio og
+     letterboxes (svarte felt) i stedet for å strekkes til full bredde. */
+  .stage:fullscreen{ background:#000; }
+  .stage:fullscreen .toolbar .pill-btn span.label{ color:#fff; }
+
+  /* ---------- Kun for denne demoen ---------- */
+  .demo-bar{
+    position:fixed; top:8px; left:8px; z-index:50; display:flex; gap:8px; flex-wrap:wrap;
+    background:rgba(255,255,255,.92); padding:8px 10px; border-radius:8px; font-size:12px;
+    max-width: 90vw;
+  }
+  .demo-bar button{ font-size:12px; padding:4px 8px; cursor:pointer; }
+  body.demo-shrink .stage{ height:560px !important; min-height:0; box-shadow:inset 0 0 0 3px #e33; }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <button onclick="toggleLongText()">Simuler lang tekst (overflow)</button>
+  <button onclick="document.body.classList.toggle('demo-shrink')">Simuler lav høyde (&lt;650px)</button>
+  <span>Prøv også ekte zoom (Ctrl/Cmd +/-) og å endre vindusstørrelse.</span>
+</div>
+
+<div class="stage" id="stage">
+  <div class="book">
+    <div class="frame">
+      <div class="nav-arrow prev">&#8249;</div>
+      <div class="nav-arrow next">&#8250;</div>
+      <div class="bg-layer"></div>
+      <div class="overlay">
+        <div class="bubble" id="bubble">
+          <p>Jenta liker is.</p>
+          <p>Pingvinen spiser fisk.</p>
+          <p>Isbjørene er hvit.</p>
+          <p>Inuitten vinker, han bor i en iglo.</p>
+        </div>
+        <div class="spacer"></div>
+        <div class="word-row">
+          <div class="word-group">
+            <div class="tile"><span class="ic">🍦</span>is</div>
+            <div class="tile"><span class="ic">🐧</span>pingvin</div>
+            <div class="tile"><span class="ic">🐟</span>fisk</div>
+            <div class="tile"><span class="ic">🐻‍❄️</span>isbjørn</div>
+            <div class="tile"><span class="ic">🧊</span>isfjell</div>
+          </div>
+          <div class="word-group">
+            <div class="tile"><span class="ic">🏠</span>iglo</div>
+            <div class="tile"><span class="ic">🌦️</span>årstider</div>
+            <div class="tile"><span class="ic">🦕</span>dinosaur</div>
+            <div class="tile"><span class="ic">🐦</span>fugl</div>
+            <div class="tile"><span class="ic">☀️</span>sol</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="left">
+        <button class="pill-btn"><span class="label">🔤 Tekst over</span></button>
+        <button class="pill-btn active"><span class="label">🅰 Symboler</span></button>
+      </div>
+      <div class="right">
+        <button class="icon-btn">🔊</button>
+        <button class="icon-btn">⚙️</button>
+        <button class="icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()">⛶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Kun to JS-oppgaver: fullskjerm-API (må være JS) og demo-knappene under.
+  function toggleFullscreen(){
+    const stage = document.getElementById('stage');
+    if(!document.fullscreenElement){ stage.requestFullscreen?.(); }
+    else { document.exitFullscreen?.(); }
+  }
+  function toggleLongText(){
+    const bubble = document.getElementById('bubble');
+    if(!bubble.dataset.long){
+      bubble.insertAdjacentHTML('beforeend',
+        '<p>Ekstra lang linje for å teste overflow: Isbjørnen går bortover isen og ser etter mat, mens pingvinen hopper i vannet for å svømme etter fisk.</p>' +
+        '<p>Enda en linje til, slik at vi ser at HELE siden (og bakgrunnen) vokser i høyden – ikke bare tekstboksen.</p>');
+      bubble.dataset.long = "1";
+    } else { location.reload(); }
+  }
+</script>
+</body>
+</html>
